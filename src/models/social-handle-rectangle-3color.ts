@@ -4,10 +4,19 @@ export const socialHandleRectangle3Color: ModelDefinition = {
   id: 'social-handle-rectangle-3color',
   slug: 'social-handle-rectangle-3color',
   title: 'Social Handle Retângulo - 3 Cores',
-  subtitle: 'Handle das redes sociais sobre base retangular em 3 camadas coloridas.',
+  subtitle:
+    'Handle das redes sociais sobre base retangular em 3 camadas coloridas.',
   category: 'signs',
   difficulty: 'easy',
-  tags: ['instagram', 'tiktok', 'social', 'handle', 'retângulo', 'letreiro', '3 cores'],
+  tags: [
+    'instagram',
+    'tiktok',
+    'social',
+    'handle',
+    'retângulo',
+    'letreiro',
+    '3 cores',
+  ],
   exportOptions: [
     { format: 'stl', parameter: 'Base', filename: 'SocialRect-3C-Base' },
     { format: 'stl', parameter: 'Middle', filename: 'SocialRect-3C-Middle' },
@@ -48,7 +57,12 @@ export const socialHandleRectangle3Color: ModelDefinition = {
     },
     {
       name: 'Tamanho',
-      parameterOrder: ['Target_Size', 'Rect_Width', 'Rect_Height', 'Corner_Radius'],
+      parameterOrder: [
+        'Target_Size',
+        'Rect_Width',
+        'Rect_Height',
+        'Corner_Radius',
+      ],
       parameters: {
         Target_Size: {
           type: 'number',

@@ -4,13 +4,12 @@ export const candyMold: ModelDefinition = {
   id: 'candy-mold',
   slug: 'candy-mold',
   title: 'Forminha de Brigadeiro',
-  subtitle: 'Molde paramétrico para fazer brigadeiros e docinhos. Configure o número de cavidades e o tamanho.',
+  subtitle:
+    'Molde paramétrico para fazer brigadeiros e docinhos. Configure o número de cavidades e o tamanho.',
   category: 'kitchen',
   difficulty: 'easy',
   tags: ['brigadeiro', 'doce', 'molde', 'cozinha', 'confeitaria', 'forminha'],
-  exportOptions: [
-    { format: 'stl', parameter: 'Base', filename: 'CandyMold' },
-  ],
+  exportOptions: [{ format: 'stl', parameter: 'Base', filename: 'CandyMold' }],
   scadFile: 'candy-mold.scad',
   sections: [
     {

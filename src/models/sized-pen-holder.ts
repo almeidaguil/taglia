@@ -4,13 +4,19 @@ export const sizedPenHolder: ModelDefinition = {
   id: 'sized-pen-holder',
   slug: 'sized-pen-holder',
   title: 'Porta-canetas Paramétrico',
-  subtitle: 'Porta-canetas com furos de diferentes diâmetros para organizar canetas, lápis e marcadores.',
+  subtitle:
+    'Porta-canetas com furos de diferentes diâmetros para organizar canetas, lápis e marcadores.',
   category: 'tools',
   difficulty: 'easy',
-  tags: ['porta-canetas', 'organizador', 'escrivaninha', 'escritório', 'canetas', 'lápis'],
-  exportOptions: [
-    { format: 'stl', parameter: 'Base', filename: 'PenHolder' },
+  tags: [
+    'porta-canetas',
+    'organizador',
+    'escrivaninha',
+    'escritório',
+    'canetas',
+    'lápis',
   ],
+  exportOptions: [{ format: 'stl', parameter: 'Base', filename: 'PenHolder' }],
   scadFile: 'sized-pen-holder.scad',
   sections: [
     {

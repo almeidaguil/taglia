@@ -4,7 +4,8 @@ export const wordOffset2Color: ModelDefinition = {
   id: 'word-offset-2color',
   slug: 'word-offset-2color',
   title: 'Letreiro de Palavra - 2 Camadas',
-  subtitle: 'Letreiro bicolorido com efeito 3D deslocado. Imprime em 2 partes: base e topo.',
+  subtitle:
+    'Letreiro bicolorido com efeito 3D deslocado. Imprime em 2 partes: base e topo.',
   category: 'signs',
   difficulty: 'easy',
   tags: ['palavra', 'letreiro', 'texto', 'decoração', 'presente', '2 cores'],

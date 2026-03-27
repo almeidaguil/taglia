@@ -1,21 +1,29 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
-async function generateScadCode(values: ParameterValues, _exportParam: string): Promise<string> {
+async function generateScadCode(
+  values: ParameterValues,
+  _exportParam: string,
+): Promise<string> {
   const dataUrl = values['Image'] as string
   if (!dataUrl || !dataUrl.startsWith('data:')) {
-    throw new Error('Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.')
+    throw new Error(
+      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
+    )
   }
 
-  const sizeMm    = values['Size'] as number
-  const bowlH     = values['Bowl_Height'] as number
-  const wall      = values['Wall_Thickness'] as number
-  const baseScale = values['Base_Scale'] as number / 100 // UI mostra %, SCAD usa fração
-  const slices    = values['Slices'] as number
+  const sizeMm = values['Size'] as number
+  const bowlH = values['Bowl_Height'] as number
+  const wall = values['Wall_Thickness'] as number
+  const baseScale = (values['Base_Scale'] as number) / 100 // UI mostra %, SCAD usa fração
+  const slices = values['Slices'] as number
   const threshold = values['Threshold'] as number
 
-  const { pointsStr, pathsStr, pointCount } =
-    await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
+  const { pointsStr, pathsStr, pointCount } = await traceImageToScadPolygon(
+    dataUrl,
+    sizeMm,
+    threshold,
+  )
 
   // Gera N fatias com hull() entre pares adjacentes.
   // Escala varia de baseScale (fundo) a 1.0 (topo/borda) com curva sqrt para curvatura.
@@ -36,25 +44,25 @@ async function generateScadCode(values: ParameterValues, _exportParam: string): 
 
     outerSlices.push(
       `    hull() {\n` +
-      `      translate([0, 0, ${z0.toFixed(2)}])\n` +
-      `        linear_extrude(0.01, convexity = 10)\n` +
-      `        scale([${s0}, ${s0}]) shape_outer();\n` +
-      `      translate([0, 0, ${z1.toFixed(2)}])\n` +
-      `        linear_extrude(0.01, convexity = 10)\n` +
-      `        scale([${s1}, ${s1}]) shape_outer();\n` +
-      `    }`
+        `      translate([0, 0, ${z0.toFixed(2)}])\n` +
+        `        linear_extrude(0.01, convexity = 10)\n` +
+        `        scale([${s0}, ${s0}]) shape_outer();\n` +
+        `      translate([0, 0, ${z1.toFixed(2)}])\n` +
+        `        linear_extrude(0.01, convexity = 10)\n` +
+        `        scale([${s1}, ${s1}]) shape_outer();\n` +
+        `    }`,
     )
 
     // Inner: mesmo shape mas com offset negativo (parede) e escala ajustada
     innerSlices.push(
       `    hull() {\n` +
-      `      translate([0, 0, ${z0.toFixed(2)}])\n` +
-      `        linear_extrude(0.01, convexity = 10)\n` +
-      `        scale([${s0}, ${s0}]) offset(r = -Wall_Thickness) shape_outer();\n` +
-      `      translate([0, 0, ${z1.toFixed(2)}])\n` +
-      `        linear_extrude(0.01, convexity = 10)\n` +
-      `        scale([${s1}, ${s1}]) offset(r = -Wall_Thickness) shape_outer();\n` +
-      `    }`
+        `      translate([0, 0, ${z0.toFixed(2)}])\n` +
+        `        linear_extrude(0.01, convexity = 10)\n` +
+        `        scale([${s0}, ${s0}]) offset(r = -Wall_Thickness) shape_outer();\n` +
+        `      translate([0, 0, ${z1.toFixed(2)}])\n` +
+        `        linear_extrude(0.01, convexity = 10)\n` +
+        `        scale([${s1}, ${s1}]) offset(r = -Wall_Thickness) shape_outer();\n` +
+        `    }`,
     )
   }
 
@@ -96,14 +104,21 @@ export const bowlAnything: ModelDefinition = {
   slug: 'bowl-anything',
   title: 'Cumbuca a partir de Imagem',
   subtitle: 'Tigela personalizada com formato de qualquer silhueta.',
-  description: 'Crie uma cumbuca/tigela arredondada com qualquer forma de imagem. A borda segue o contorno da silhueta e as paredes curvam suavemente até a base. Perfeita para organizar pequenos objetos ou como decoração.',
+  description:
+    'Crie uma cumbuca/tigela arredondada com qualquer forma de imagem. A borda segue o contorno da silhueta e as paredes curvam suavemente até a base. Perfeita para organizar pequenos objetos ou como decoração.',
   category: 'kitchen',
   difficulty: 'medium',
-  tags: ['tigela', 'cumbuca', 'bowl', 'imagem', 'silhueta', 'decoração', 'organizador'],
-  generateScadCode,
-  exportOptions: [
-    { format: 'stl', parameter: 'Bowl', filename: 'bowl' },
+  tags: [
+    'tigela',
+    'cumbuca',
+    'bowl',
+    'imagem',
+    'silhueta',
+    'decoração',
+    'organizador',
   ],
+  generateScadCode,
+  exportOptions: [{ format: 'stl', parameter: 'Bowl', filename: 'bowl' }],
   sections: [
     {
       name: 'default',

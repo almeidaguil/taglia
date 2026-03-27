@@ -4,7 +4,8 @@ export const fullNameKeychain: ModelDefinition = {
   id: 'full-name-keychain',
   slug: 'full-name-keychain',
   title: 'Chaveiro Nome Completo',
-  subtitle: 'Chaveiro personalizado com seu nome. Simples, elegante e pronto para imprimir em uma cor.',
+  subtitle:
+    'Chaveiro personalizado com seu nome. Simples, elegante e pronto para imprimir em uma cor.',
   category: 'keychains',
   difficulty: 'easy',
   tags: ['chaveiro', 'nome', 'presente', 'personalizado', 'simples'],

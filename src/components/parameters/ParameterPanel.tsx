@@ -7,7 +7,11 @@ interface ParameterPanelProps {
   onChange: (name: string, value: string | number | boolean) => void
 }
 
-export function ParameterPanel({ model, values, onChange }: ParameterPanelProps) {
+export function ParameterPanel({
+  model,
+  values,
+  onChange,
+}: ParameterPanelProps) {
   return (
     <div className="flex flex-col gap-5">
       {model.sections.map((section) => (

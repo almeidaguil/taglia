@@ -4,7 +4,8 @@ export const textOffsetKeychain2Colors: ModelDefinition = {
   id: 'text-offset-keychain-2colors',
   slug: 'text-offset-keychain-2colors',
   title: 'Chaveiro 2 Cores',
-  subtitle: 'Chaveiro bicolorido com texto em relevo. Design moderno para presentear.',
+  subtitle:
+    'Chaveiro bicolorido com texto em relevo. Design moderno para presentear.',
   category: 'keychains',
   difficulty: 'easy',
   tags: ['chaveiro', '2 cores', 'nome', 'relevo', 'presente', 'personalizado'],
@@ -42,7 +43,12 @@ export const textOffsetKeychain2Colors: ModelDefinition = {
     },
     {
       name: 'Tamanho',
-      parameterOrder: ['Name_Size', 'Rect_Width', 'Rect_Height', 'Corner_Radius'],
+      parameterOrder: [
+        'Name_Size',
+        'Rect_Width',
+        'Rect_Height',
+        'Corner_Radius',
+      ],
       parameters: {
         Name_Size: {
           type: 'number',
@@ -80,7 +86,12 @@ export const textOffsetKeychain2Colors: ModelDefinition = {
     },
     {
       name: 'Ajustes',
-      parameterOrder: ['Tolerance', 'Base_Height', 'Layer_Height', 'Ring_Hole_D'],
+      parameterOrder: [
+        'Tolerance',
+        'Base_Height',
+        'Layer_Height',
+        'Ring_Hole_D',
+      ],
       parameters: {
         Tolerance: {
           type: 'number',

@@ -4,10 +4,19 @@ export const socialHandleOffset3Color: ModelDefinition = {
   id: 'social-handle-offset-3color',
   slug: 'social-handle-offset-3color',
   title: 'Social Handle - 3 Cores',
-  subtitle: 'Letreiro com seu @ das redes sociais em 3 camadas coloridas. Perfeito para estúdios e criadores.',
+  subtitle:
+    'Letreiro com seu @ das redes sociais em 3 camadas coloridas. Perfeito para estúdios e criadores.',
   category: 'signs',
   difficulty: 'easy',
-  tags: ['instagram', 'tiktok', 'social', 'handle', 'arroba', 'letreiro', '3 cores'],
+  tags: [
+    'instagram',
+    'tiktok',
+    'social',
+    'handle',
+    'arroba',
+    'letreiro',
+    '3 cores',
+  ],
   exportOptions: [
     { format: 'stl', parameter: 'Base', filename: 'SocialHandle-3C-Base' },
     { format: 'stl', parameter: 'Middle', filename: 'SocialHandle-3C-Middle' },

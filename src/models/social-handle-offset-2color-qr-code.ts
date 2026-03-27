@@ -4,10 +4,19 @@ export const socialHandleOffset2ColorQrCode: ModelDefinition = {
   id: 'social-handle-offset-2color-qr-code',
   slug: 'social-handle-offset-2color-qr-code',
   title: 'Social Handle + QR Code',
-  subtitle: 'Handle das redes sociais com área de QR code. Coloque uma etiqueta de QR code ou imprima separadamente.',
+  subtitle:
+    'Handle das redes sociais com área de QR code. Coloque uma etiqueta de QR code ou imprima separadamente.',
   category: 'signs',
   difficulty: 'easy',
-  tags: ['instagram', 'tiktok', 'social', 'qr code', 'handle', 'letreiro', '2 cores'],
+  tags: [
+    'instagram',
+    'tiktok',
+    'social',
+    'qr code',
+    'handle',
+    'letreiro',
+    '2 cores',
+  ],
   exportOptions: [
     { format: 'stl', parameter: 'Base', filename: 'SocialQR-Base' },
     { format: 'stl', parameter: 'Top', filename: 'SocialQR-Top' },
@@ -47,7 +56,13 @@ export const socialHandleOffset2ColorQrCode: ModelDefinition = {
     },
     {
       name: 'Tamanho',
-      parameterOrder: ['Text_Size', 'QR_Size', 'Rect_Width', 'Rect_Height', 'Corner_Radius'],
+      parameterOrder: [
+        'Text_Size',
+        'QR_Size',
+        'Rect_Width',
+        'Rect_Height',
+        'Corner_Radius',
+      ],
       parameters: {
         Text_Size: {
           type: 'number',

@@ -4,13 +4,19 @@ export const textPlacementHelper: ModelDefinition = {
   id: 'text-placement-helper',
   slug: 'text-placement-helper',
   title: 'Auxiliar de Posicionamento',
-  subtitle: 'Régua e gabarito paramétrico para auxiliar o posicionamento preciso de textos e elementos em impressões 3D.',
+  subtitle:
+    'Régua e gabarito paramétrico para auxiliar o posicionamento preciso de textos e elementos em impressões 3D.',
   category: 'tools',
   difficulty: 'easy',
-  tags: ['régua', 'gabarito', 'posicionamento', 'auxiliar', 'ferramenta', 'medição'],
-  exportOptions: [
-    { format: 'stl', parameter: 'Base', filename: 'TextHelper' },
+  tags: [
+    'régua',
+    'gabarito',
+    'posicionamento',
+    'auxiliar',
+    'ferramenta',
+    'medição',
   ],
+  exportOptions: [{ format: 'stl', parameter: 'Base', filename: 'TextHelper' }],
   scadFile: 'text-placement-helper.scad',
   sections: [
     {
@@ -53,7 +59,13 @@ export const textPlacementHelper: ModelDefinition = {
     },
     {
       name: 'Marcações',
-      parameterOrder: ['Grid_Spacing', 'Mark_H', 'Mark_Depth', 'Label_Size', 'Font'],
+      parameterOrder: [
+        'Grid_Spacing',
+        'Mark_H',
+        'Mark_Depth',
+        'Label_Size',
+        'Font',
+      ],
       parameters: {
         Grid_Spacing: {
           type: 'number',

@@ -7,7 +7,10 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur border-b border-zinc-800">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-bold text-lg text-white">
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-bold text-lg text-white"
+        >
           <Box className="w-5 h-5 text-blue-400" />
           <span>Taglia</span>
         </Link>

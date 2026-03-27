@@ -32,7 +32,12 @@ export function ModelViewer({ stlBlob, className }: ModelViewerProps) {
     sceneRef.current = scene
 
     // Camera
-    const camera = new THREE.PerspectiveCamera(45, width / height || 1, 0.1, 2000)
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      width / height || 1,
+      0.1,
+      2000,
+    )
     camera.position.set(0, 80, 200)
     cameraRef.current = camera
 
@@ -117,7 +122,10 @@ export function ModelViewer({ stlBlob, className }: ModelViewerProps) {
       const loader = new STLLoader()
       const geometry = loader.parse(buffer)
 
-      if (!geometry.attributes.position || geometry.attributes.position.count === 0) {
+      if (
+        !geometry.attributes.position ||
+        geometry.attributes.position.count === 0
+      ) {
         console.warn('[viewer] empty geometry')
         geometry.dispose()
         return
@@ -174,7 +182,12 @@ export function ModelViewer({ stlBlob, className }: ModelViewerProps) {
     <canvas
       ref={canvasRef}
       className={className}
-      style={{ width: '100%', height: '100%', minHeight: 360, display: 'block' }}
+      style={{
+        width: '100%',
+        height: '100%',
+        minHeight: 360,
+        display: 'block',
+      }}
     />
   )
 }

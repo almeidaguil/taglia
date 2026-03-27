@@ -7,7 +7,14 @@ export const rectangleNameKeychain: ModelDefinition = {
   subtitle: 'Chaveiro retangular com nome gravado. Design clássico e elegante.',
   category: 'keychains',
   difficulty: 'easy',
-  tags: ['chaveiro', 'retângulo', 'nome', 'gravado', 'presente', 'personalizado'],
+  tags: [
+    'chaveiro',
+    'retângulo',
+    'nome',
+    'gravado',
+    'presente',
+    'personalizado',
+  ],
   exportOptions: [
     { format: 'stl', parameter: 'Base', filename: 'RectKeychain' },
   ],
@@ -41,7 +48,12 @@ export const rectangleNameKeychain: ModelDefinition = {
     },
     {
       name: 'Tamanho',
-      parameterOrder: ['Name_Size', 'Rect_Width', 'Rect_Height', 'Corner_Radius'],
+      parameterOrder: [
+        'Name_Size',
+        'Rect_Width',
+        'Rect_Height',
+        'Corner_Radius',
+      ],
       parameters: {
         Name_Size: {
           type: 'number',

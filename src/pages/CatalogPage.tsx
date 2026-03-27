@@ -22,7 +22,10 @@ const filterCategories = [
   { key: 'tools', label: 'Ferramentas' },
 ] as const
 
-const difficultyLabel: Record<string, { label: string; variant: 'green' | 'yellow' | 'default' }> = {
+const difficultyLabel: Record<
+  string,
+  { label: string; variant: 'green' | 'yellow' | 'default' }
+> = {
   easy: { label: 'Fácil', variant: 'green' },
   medium: { label: 'Médio', variant: 'yellow' },
   hard: { label: 'Difícil', variant: 'default' },
@@ -43,11 +46,15 @@ function ModelCard({ model }: { model: ModelDefinition }) {
 
       <div className="p-4 flex flex-col gap-2 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-sm font-semibold text-zinc-100 leading-snug">{model.title}</h3>
+          <h3 className="text-sm font-semibold text-zinc-100 leading-snug">
+            {model.title}
+          </h3>
           <Badge variant={diff.variant}>{diff.label}</Badge>
         </div>
 
-        <p className="text-xs text-zinc-500 leading-relaxed flex-1">{model.subtitle}</p>
+        <p className="text-xs text-zinc-500 leading-relaxed flex-1">
+          {model.subtitle}
+        </p>
 
         <div className="flex items-center justify-between mt-1">
           <span className="text-xs text-zinc-600 flex items-center gap-1">
@@ -91,7 +98,7 @@ export function CatalogPage() {
           !q ||
           m.title.toLowerCase().includes(q) ||
           m.subtitle.toLowerCase().includes(q) ||
-          m.tags.some((t) => t.toLowerCase().includes(q))
+          m.tags.some((t) => t.toLowerCase().includes(q)),
       )
   }, [category, search])
 
@@ -100,7 +107,8 @@ export function CatalogPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">Modelos Paramétricos</h1>
         <p className="text-zinc-500 mt-1 text-sm">
-          {models.length} modelo{models.length !== 1 ? 's' : ''} disponíveis — personalize e baixe STL/3MF direto no browser.
+          {models.length} modelo{models.length !== 1 ? 's' : ''} disponíveis —
+          personalize e baixe STL/3MF direto no browser.
         </p>
       </div>
 

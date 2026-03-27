@@ -1,21 +1,29 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
-async function generateScadCode(values: ParameterValues, _exportParam: string): Promise<string> {
+async function generateScadCode(
+  values: ParameterValues,
+  _exportParam: string,
+): Promise<string> {
   const dataUrl = values['Image'] as string
   if (!dataUrl || !dataUrl.startsWith('data:')) {
-    throw new Error('Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.')
+    throw new Error(
+      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
+    )
   }
 
-  const sizeMm        = values['Size'] as number
-  const wallMargin     = values['Wall_Margin'] as number
-  const baseThickness  = values['Base_Thickness'] as number
-  const fillHeight     = values['Fill_Height'] as number
-  const wallHeight     = values['Wall_Height'] as number
-  const threshold      = values['Threshold'] as number
+  const sizeMm = values['Size'] as number
+  const wallMargin = values['Wall_Margin'] as number
+  const baseThickness = values['Base_Thickness'] as number
+  const fillHeight = values['Fill_Height'] as number
+  const wallHeight = values['Wall_Height'] as number
+  const threshold = values['Threshold'] as number
 
-  const { pointsStr, pathsStr, pointCount } =
-    await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
+  const { pointsStr, pathsStr, pointCount } = await traceImageToScadPolygon(
+    dataUrl,
+    sizeMm,
+    threshold,
+  )
 
   return `// Imagem para 3D — Bordas para Resina — gerado pelo Taglia
 // ${pointCount} ponto(s) | base ${baseThickness}mm, preenchimento ${fillHeight}mm, parede ${wallHeight}mm
@@ -54,7 +62,8 @@ export const imageTo3dResinBorder: ModelDefinition = {
   slug: 'image-to3d-resin-border',
   title: 'Imagem para 3D - Bordas para Resina',
   subtitle: 'Silhueta com bordas altas para preenchimento com resina colorida.',
-  description: 'Gera uma placa com a silhueta da imagem em relevo baixo, cercada por paredes altas que servem como represa para preencher com resina UV ou epóxi colorida.',
+  description:
+    'Gera uma placa com a silhueta da imagem em relevo baixo, cercada por paredes altas que servem como represa para preencher com resina UV ou epóxi colorida.',
   category: 'tools',
   difficulty: 'easy',
   tags: ['imagem', 'silhueta', 'resina', 'resin', 'bordas', '3d', 'relevo'],
@@ -91,7 +100,12 @@ export const imageTo3dResinBorder: ModelDefinition = {
     },
     {
       name: 'Dimensões',
-      parameterOrder: ['Wall_Margin', 'Base_Thickness', 'Fill_Height', 'Wall_Height'],
+      parameterOrder: [
+        'Wall_Margin',
+        'Base_Thickness',
+        'Fill_Height',
+        'Wall_Height',
+      ],
       parameters: {
         Wall_Margin: {
           type: 'number',
@@ -119,7 +133,8 @@ export const imageTo3dResinBorder: ModelDefinition = {
         },
         Wall_Height: {
           type: 'number',
-          description: 'Altura das paredes de contenção (mm) — deve ser > que altura do relevo',
+          description:
+            'Altura das paredes de contenção (mm) — deve ser > que altura do relevo',
           default: 4,
           min: 2,
           max: 10,

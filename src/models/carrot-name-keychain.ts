@@ -4,7 +4,8 @@ export const carrotNameKeychain: ModelDefinition = {
   id: 'carrot-name-keychain',
   slug: 'carrot-name-keychain',
   title: 'Chaveiro Cenoura',
-  subtitle: 'Fofo chaveiro em formato de cenoura com seu nome gravado. Perfeito para fãs de coelhinhos!',
+  subtitle:
+    'Fofo chaveiro em formato de cenoura com seu nome gravado. Perfeito para fãs de coelhinhos!',
   category: 'keychains',
   difficulty: 'easy',
   tags: ['chaveiro', 'cenoura', 'fofo', 'nome', 'presente', 'criança'],

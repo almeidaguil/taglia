@@ -32,6 +32,10 @@ export default defineConfig([
       'complexity': ['warn', 10],
 
       // --- Clean Code: nomes claros, sem código morto ---
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
       'no-shadow': 'off',
       '@typescript-eslint/no-shadow': 'warn',
       'no-unused-expressions': 'warn',

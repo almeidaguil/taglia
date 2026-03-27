@@ -1,19 +1,24 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
-async function generateScadCode(values: ParameterValues, _exportParam: string): Promise<string> {
+async function generateScadCode(
+  values: ParameterValues,
+  _exportParam: string,
+): Promise<string> {
   const dataUrl = values['Image'] as string
   if (!dataUrl || !dataUrl.startsWith('data:')) {
-    throw new Error('Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.')
+    throw new Error(
+      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
+    )
   }
 
-  const sizeMm       = values['Size'] as number
-  const wall         = values['Wall_Thickness'] as number
-  const height       = values['Height'] as number
-  const threshold    = values['Threshold'] as number
-  const hasHandle    = values['Handle'] as boolean
+  const sizeMm = values['Size'] as number
+  const wall = values['Wall_Thickness'] as number
+  const height = values['Height'] as number
+  const threshold = values['Threshold'] as number
+  const hasHandle = values['Handle'] as boolean
   const handleHeight = values['Handle_Height'] as number
-  const handleWidth  = values['Handle_Width'] as number
+  const handleWidth = values['Handle_Width'] as number
 
   const { pointsStr, pathsStr, pointCount, pathCount } =
     await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
@@ -75,11 +80,21 @@ export const cookieCutterGenerator: ModelDefinition = {
   id: 'cookie-cutter-generator',
   slug: 'cookie-cutter-generator',
   title: 'Cortador de Biscoito',
-  subtitle: 'Gera um cortador de biscoito a partir de qualquer imagem. Imprime pronto para usar.',
-  description: 'Faça upload de uma imagem em preto e branco (alto contraste) para melhores resultados. O cortador é gerado com parede fina seguindo o contorno da silhueta.',
+  subtitle:
+    'Gera um cortador de biscoito a partir de qualquer imagem. Imprime pronto para usar.',
+  description:
+    'Faça upload de uma imagem em preto e branco (alto contraste) para melhores resultados. O cortador é gerado com parede fina seguindo o contorno da silhueta.',
   category: 'kitchen',
   difficulty: 'easy',
-  tags: ['cortador', 'biscoito', 'cookie', 'cutter', 'imagem', 'silhueta', 'confeitaria'],
+  tags: [
+    'cortador',
+    'biscoito',
+    'cookie',
+    'cutter',
+    'imagem',
+    'silhueta',
+    'confeitaria',
+  ],
   generateScadCode,
   exportOptions: [
     { format: 'stl', parameter: 'Cutter', filename: 'cookie-cutter' },

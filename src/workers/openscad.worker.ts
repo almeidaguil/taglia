@@ -23,16 +23,19 @@ function getFontBuffers(): Promise<Map<string, Uint8Array>> {
       const results = await Promise.allSettled(
         Object.keys(FONT_MAP).map(async (filename) => {
           const base = import.meta.env.BASE_URL || '/'
-          const url = new URL(`${base}fonts/${filename}`, self.location.origin).href
+          const url = new URL(`${base}fonts/${filename}`, self.location.origin)
+            .href
           const resp = await fetch(url)
           if (!resp.ok) throw new Error(`Font não encontrada: ${filename}`)
           const buf = await resp.arrayBuffer()
           buffers.set(filename, new Uint8Array(buf))
-        })
+        }),
       )
       const failed = results.filter((r) => r.status === 'rejected').length
       if (failed > 0) {
-        console.warn(`[openscad] ${failed} fonte(s) não carregada(s) — usando fonte padrão`)
+        console.warn(
+          `[openscad] ${failed} fonte(s) não carregada(s) — usando fonte padrão`,
+        )
       }
       return buffers
     })()
@@ -55,23 +58,54 @@ async function createFreshInstance() {
   const fs = scad.getInstance().FS
 
   // Emscripten inicia sem /usr — criar cada nível separadamente
-  for (const dir of ['/usr', '/usr/share', '/usr/share/fonts', '/usr/share/fonts/truetype', FONT_DIR]) {
-    try { fs.mkdir(dir) } catch { /* já existe */ }
+  for (const dir of [
+    '/usr',
+    '/usr/share',
+    '/usr/share/fonts',
+    '/usr/share/fonts/truetype',
+    FONT_DIR,
+  ]) {
+    try {
+      fs.mkdir(dir)
+    } catch {
+      /* já existe */
+    }
   }
-  try { fs.mkdir('/etc') } catch {}
-  try { fs.mkdir('/etc/fonts') } catch {}
   try {
-    fs.writeFile('/etc/fonts/fonts.conf', `<?xml version="1.0"?>
+    fs.mkdir('/etc')
+  } catch {
+    /* já existe */
+  }
+  try {
+    fs.mkdir('/etc/fonts')
+  } catch {
+    /* já existe */
+  }
+  try {
+    fs.writeFile(
+      '/etc/fonts/fonts.conf',
+      `<?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 <fontconfig>
   <dir>${FONT_DIR}</dir>
   <cachedir>/tmp/fc-cache</cachedir>
-</fontconfig>`)
-  } catch { /* sem fonts.conf — OpenSCAD usa fonte embutida */ }
-  try { fs.mkdir('/tmp/fc-cache') } catch {}
+</fontconfig>`,
+    )
+  } catch {
+    /* sem fonts.conf — OpenSCAD usa fonte embutida */
+  }
+  try {
+    fs.mkdir('/tmp/fc-cache')
+  } catch {
+    /* já existe */
+  }
 
   for (const [filename, buf] of fontBuffers) {
-    try { fs.writeFile(`${FONT_DIR}/${filename}`, buf) } catch { /* ignora falha individual */ }
+    try {
+      fs.writeFile(`${FONT_DIR}/${filename}`, buf)
+    } catch {
+      /* ignora falha individual */
+    }
   }
 
   return scad
@@ -95,9 +129,12 @@ self.onmessage = async (e: MessageEvent) => {
     const blob = new Blob([bytes], { type: 'model/stl' })
     self.postMessage({ id, status: 'done', blob, format: 'stl' })
   } catch (err) {
-    const msg = err instanceof Error
-      ? err.message
-      : (typeof err === 'string' ? err : JSON.stringify(err))
+    const msg =
+      err instanceof Error
+        ? err.message
+        : typeof err === 'string'
+          ? err
+          : JSON.stringify(err)
     self.postMessage({ id, status: 'error', error: msg })
   }
 }

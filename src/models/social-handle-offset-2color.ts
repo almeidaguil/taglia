@@ -7,7 +7,15 @@ export const socialHandleOffset2Color: ModelDefinition = {
   subtitle: 'Letreiro com seu @ das redes sociais em 2 camadas coloridas.',
   category: 'signs',
   difficulty: 'easy',
-  tags: ['instagram', 'tiktok', 'social', 'handle', 'arroba', 'letreiro', '2 cores'],
+  tags: [
+    'instagram',
+    'tiktok',
+    'social',
+    'handle',
+    'arroba',
+    'letreiro',
+    '2 cores',
+  ],
   exportOptions: [
     { format: 'stl', parameter: 'Base', filename: 'SocialHandle-2C-Base' },
     { format: 'stl', parameter: 'Top', filename: 'SocialHandle-2C-Top' },
