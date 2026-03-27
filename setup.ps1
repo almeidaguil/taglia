@@ -91,6 +91,26 @@ function Invoke-Verify {
         $allOk = $false
     }
 
+    if (Test-Command "code") {
+        $installed = code --list-extensions 2>&1
+        $required = @(
+            "esbenp.prettier-vscode",
+            "dbaeumer.vscode-eslint",
+            "editorconfig.editorconfig"
+        )
+        $missing = $required | Where-Object {
+            $installed -notcontains $_
+        }
+        if ($missing.Count -eq 0) {
+            Write-Ok "Extensoes VS Code instaladas"
+        } else {
+            Write-Warn "Extensoes faltando: $($missing -join ', ')"
+            $allOk = $false
+        }
+    } else {
+        Write-Warn "VS Code CLI nao encontrado (opcional)"
+    }
+
     if (Test-Path "node_modules") {
         Write-Info "Testando build..."
         $buildResult = npm run build 2>&1
@@ -209,12 +229,41 @@ function Install-Dependencies {
     }
 }
 
+function Install-VsCodeExtensions {
+    Write-Title "Extensoes do VS Code"
+
+    if (-not (Test-Command "code")) {
+        Write-Warn "VS Code CLI nao encontrado. Instale manualmente as extensoes recomendadas."
+        return
+    }
+
+    $extensions = @(
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "editorconfig.editorconfig",
+        "github.copilot",
+        "github.copilot-chat",
+        "bradlc.vscode-tailwindcss"
+    )
+
+    foreach ($ext in $extensions) {
+        Write-Info "Instalando $ext..."
+        code --install-extension $ext --force 2>&1 | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Ok "$ext"
+        } else {
+            Write-Warn "Falha ao instalar $ext"
+        }
+    }
+}
+
 function Install-All {
     Write-Title "Instalacao Completa"
     Install-Git
     Install-Node
     Install-GhCli
     Install-Dependencies
+    Install-VsCodeExtensions
     Write-Host ""
     Write-Info "Instalacao completa. Executando verificacao..."
     Invoke-Verify
@@ -233,18 +282,20 @@ function Show-Menu {
         Write-Host "  [3]  Instalar Node.js" -ForegroundColor White
         Write-Host "  [4]  Instalar GitHub CLI" -ForegroundColor White
         Write-Host "  [5]  Instalar dependencias do projeto (npm install)" -ForegroundColor White
-        Write-Host "  [6]  Verificar ambiente" -ForegroundColor White
+        Write-Host "  [6]  Instalar extensoes do VS Code" -ForegroundColor White
+        Write-Host "  [7]  Verificar ambiente" -ForegroundColor White
         Write-Host "  [0]  Sair" -ForegroundColor DarkGray
         Write-Host ""
         $choice = Read-Host "  Escolha uma opcao"
 
         switch ($choice) {
-            "1" { Install-All;          Pause-Menu }
-            "2" { Install-Git;          Pause-Menu }
-            "3" { Install-Node;         Pause-Menu }
-            "4" { Install-GhCli;        Pause-Menu }
-            "5" { Install-Dependencies; Pause-Menu }
-            "6" { Invoke-Verify;        Pause-Menu }
+            "1" { Install-All;              Pause-Menu }
+            "2" { Install-Git;              Pause-Menu }
+            "3" { Install-Node;             Pause-Menu }
+            "4" { Install-GhCli;            Pause-Menu }
+            "5" { Install-Dependencies;     Pause-Menu }
+            "6" { Install-VsCodeExtensions; Pause-Menu }
+            "7" { Invoke-Verify;            Pause-Menu }
             "0" { Write-Host ""; Write-Host "  Ate mais!" -ForegroundColor Cyan; return }
             default { Write-Warn "Opcao invalida"; Start-Sleep -Seconds 1 }
         }
