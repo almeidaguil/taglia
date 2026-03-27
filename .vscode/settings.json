@@ -1,0 +1,44 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.rulers": [80],
+  "editor.tabSize": 2,
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 80,
+
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  "typescript.preferences.importModuleSpecifier": "relative",
+
+  "eslint.validate": [
+    "typescript",
+    "typescriptreact"
+  ],
+
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "file": "CLAUDE.md"
+    },
+    {
+      "file": "STYLE_GUIDE.md"
+    },
+    {
+      "file": "CONTRIBUTING.md"
+    },
+    {
+      "file": "PROJECT_STATUS.md"
+    }
+  ]
+}
