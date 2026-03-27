@@ -114,8 +114,17 @@ O `buildScadCode()` em `src/utils/scad.ts` injeta os valores do usuário via reg
 ## Dev
 
 ```bash
-npm run dev      # localhost:5173
+npm run dev      # inicia em localhost:5173
 npm run build    # produção em /dist
+npm run preview  # serve o build local (localhost:4173/taglia/)
+```
+
+Para parar qualquer um desses comandos: `Ctrl + C` no terminal.
+
+### Setup do ambiente (Windows)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File setup.ps1
 ```
 
 ## Notas importantes
