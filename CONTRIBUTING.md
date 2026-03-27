@@ -57,8 +57,6 @@ git pull
 <verbo no imperativo> <o que mudou>
 
 <corpo opcional — explica o "porquê", não o "o quê">
-
-Co-Authored-By: <agente> <email>
 ```
 
 ### Verbos
@@ -83,8 +81,6 @@ Fix font URL path in worker for GitHub Pages subpath
 
 The worker was fetching fonts from /fonts/ (root) instead of
 /taglia/fonts/, causing font loading to fail on GitHub Pages.
-
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
 EOF
 )"
 
@@ -93,13 +89,6 @@ git commit -m "Add GitHub Pages deploy workflow"
 
 # Documentação
 git commit -m "Add PROJECT_STATUS.md for cross-session continuity"
-```
-
-### Co-Authored-By
-
-Quando o commit for feito por um agente de IA, incluir a linha:
-```
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
 ```
 
 ## Pull Requests — formato
@@ -117,7 +106,6 @@ Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
 ## Test plan
 - [ ] Como validar que funciona
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
 ## Deploy
