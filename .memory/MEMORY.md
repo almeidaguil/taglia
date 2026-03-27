@@ -14,4 +14,4 @@
 - [npm run check antes de push](feedback_check_before_push.md) — manter 0 errors, 0 warnings
 - [Persistir contexto](feedback_persist_context.md) — continuidade entre sessoes
 - [Status do projeto](project_status.md) — estado atual, historico, proximos passos
-- [Links e referencias](reference_github.md) — repo, Pages, PRs, docs, MCPs
+- [Links e referencias](reference_github.md) — repo, Pages, PRs, docs, plano de acao
