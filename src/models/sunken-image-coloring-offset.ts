@@ -1,6 +1,62 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
+interface SunkenOffsetParams {
+  pointsStr: string
+  pathsStr: string
+  pointCount: number
+  frameMargin: number
+  layers: number
+  layerH: number
+  offsetStep: number
+  carveDepth: number
+}
+
+function buildLayerLines(p: SunkenOffsetParams): string[] {
+  const lines: string[] = []
+  for (let i = 0; i < p.layers; i++) {
+    const r = (p.layers - 1 - i) * p.offsetStep + p.frameMargin
+    const z = i * p.layerH
+    const h = p.layers * p.layerH - z
+    lines.push(
+      `    // Camada ${i + 1} (z=${z.toFixed(1)}mm, offset r=${r.toFixed(1)}mm)\n` +
+        `    translate([0, 0, ${z.toFixed(1)}])\n` +
+        `      linear_extrude(${h.toFixed(1)}, convexity = 10)\n` +
+        `        offset(r = ${r.toFixed(1)}) shape_outer();`,
+    )
+  }
+  return lines
+}
+
+function buildSunkenOffsetTemplate(p: SunkenOffsetParams): string {
+  const layerLines = buildLayerLines(p)
+  const totalH = p.layers * p.layerH
+  const carveZ = totalH - p.carveDepth
+  return `// Imagem Afundada com Offset — gerado pelo Taglia
+// ${p.pointCount} ponto(s) | ${p.layers} camadas, passo ${p.offsetStep}mm, altura ${p.layerH}mm/camada
+
+Frame_Margin = ${p.frameMargin};
+Layers       = ${p.layers};
+Layer_Height = ${p.layerH};
+Offset_Step  = ${p.offsetStep};
+Carve_Depth  = ${p.carveDepth};
+
+module shape_outer() {
+  polygon(points = ${p.pointsStr}, paths = ${p.pathsStr}, convexity = 10);
+}
+
+difference() {
+  union() {
+${layerLines.join('\n\n')}
+  }
+
+  translate([0, 0, ${carveZ.toFixed(1)}])
+    linear_extrude(${(p.carveDepth + 0.1).toFixed(1)}, convexity = 10)
+    shape_outer();
+}
+`
+}
+
 async function generateScadCode(
   values: ParameterValues,
   _exportParam: string,
@@ -13,63 +69,23 @@ async function generateScadCode(
   }
 
   const sizeMm = values['Size'] as number
-  const frameMargin = values['Frame_Margin'] as number
-  const layers = values['Layers'] as number
-  const layerH = values['Layer_Height'] as number
-  const offsetStep = values['Offset_Step'] as number
-  const carveDepth = values['Carve_Depth'] as number
   const threshold = values['Threshold'] as number
-
   const { pointsStr, pathsStr, pointCount } = await traceImageToScadPolygon(
     dataUrl,
     sizeMm,
     threshold,
   )
 
-  // Gera camadas offset (mesma lógica de image-to3d-offset, mas com frameMargin adicionado).
-  // Camada 0 = base (maior), camada layers-1 = topo (menor, mais próxima da silhueta).
-  const layerLines: string[] = []
-  for (let i = 0; i < layers; i++) {
-    const r = (layers - 1 - i) * offsetStep + frameMargin
-    const z = i * layerH
-    const h = layers * layerH - z // cada camada se estende até o topo
-    layerLines.push(
-      `    // Camada ${i + 1} (z=${z.toFixed(1)}mm, offset r=${r.toFixed(1)}mm)\n` +
-        `    translate([0, 0, ${z.toFixed(1)}])\n` +
-        `      linear_extrude(${h.toFixed(1)}, convexity = 10)\n` +
-        `        offset(r = ${r.toFixed(1)}) shape_outer();`,
-    )
-  }
-
-  const totalH = layers * layerH
-  const carveZ = totalH - carveDepth
-
-  return `// Imagem Afundada com Offset — gerado pelo Taglia
-// ${pointCount} ponto(s) | ${layers} camadas, passo ${offsetStep}mm, altura ${layerH}mm/camada
-
-Frame_Margin = ${frameMargin};
-Layers       = ${layers};
-Layer_Height = ${layerH};
-Offset_Step  = ${offsetStep};
-Carve_Depth  = ${carveDepth};
-
-module shape_outer() {
-  polygon(points = ${pointsStr}, paths = ${pathsStr}, convexity = 10);
-}
-
-// Placa com camadas offset escalonadas e silhueta entalhada no topo.
-// Para impressão multi-cor: trocar filamento a cada ${layerH}mm de altura.
-difference() {
-  union() {
-${layerLines.join('\n\n')}
-  }
-
-  // Entalhe da silhueta a partir do topo
-  translate([0, 0, ${carveZ.toFixed(1)}])
-    linear_extrude(${(carveDepth + 0.1).toFixed(1)}, convexity = 10)
-    shape_outer();
-}
-`
+  return buildSunkenOffsetTemplate({
+    pointsStr,
+    pathsStr,
+    pointCount,
+    frameMargin: values['Frame_Margin'] as number,
+    layers: values['Layers'] as number,
+    layerH: values['Layer_Height'] as number,
+    offsetStep: values['Offset_Step'] as number,
+    carveDepth: values['Carve_Depth'] as number,
+  })
 }
 
 export const sunkenImageColoringOffset: ModelDefinition = {

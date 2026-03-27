@@ -39,7 +39,6 @@ function ModelCard({ model }: { model: ModelDefinition }) {
       to={`/model/${model.slug}`}
       className="group flex flex-col bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-blue-700 transition-all duration-200 hover:shadow-lg hover:shadow-blue-900/20"
     >
-      {/* Thumbnail placeholder */}
       <div className="aspect-video bg-zinc-800 flex items-center justify-center">
         <Box className="w-12 h-12 text-zinc-600 group-hover:text-blue-500 transition-colors" />
       </div>
@@ -77,30 +76,92 @@ function ModelCard({ model }: { model: ModelDefinition }) {
   )
 }
 
+function buildCategoryCounts() {
+  const counts: Record<string, number> = { all: models.length }
+  for (const m of models) {
+    counts[m.category] = (counts[m.category] ?? 0) + 1
+  }
+  return counts
+}
+
+function filterModels(category: string, search: string) {
+  const q = search.toLowerCase().trim()
+  return models
+    .filter((m) => category === 'all' || m.category === category)
+    .filter(
+      (m) =>
+        !q ||
+        m.title.toLowerCase().includes(q) ||
+        m.subtitle.toLowerCase().includes(q) ||
+        m.tags.some((t) => t.toLowerCase().includes(q)),
+    )
+}
+
+function SearchInput({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (v: string) => void
+}) {
+  return (
+    <div className="relative mb-4">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Buscar por nome, descrição ou tag..."
+        className="w-full pl-10 pr-4 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-blue-600 transition-colors"
+      />
+    </div>
+  )
+}
+
+function CategoryFilters({
+  category,
+  counts,
+  onSelect,
+}: {
+  category: string
+  counts: Record<string, number>
+  onSelect: (key: string) => void
+}) {
+  return (
+    <div className="flex flex-wrap gap-2 mb-6">
+      {filterCategories.map((cat) => (
+        <button
+          key={cat.key}
+          onClick={() => onSelect(cat.key)}
+          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            category === cat.key
+              ? 'bg-blue-600 text-white'
+              : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+          }`}
+        >
+          {cat.label}
+          <span
+            className={`ml-1.5 text-xs ${
+              category === cat.key ? 'text-blue-200' : 'text-zinc-500'
+            }`}
+          >
+            {counts[cat.key] ?? 0}
+          </span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export function CatalogPage() {
   const [category, setCategory] = useState<string>('all')
   const [search, setSearch] = useState('')
 
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: models.length }
-    for (const m of models) {
-      counts[m.category] = (counts[m.category] ?? 0) + 1
-    }
-    return counts
-  }, [])
-
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase().trim()
-    return models
-      .filter((m) => category === 'all' || m.category === category)
-      .filter(
-        (m) =>
-          !q ||
-          m.title.toLowerCase().includes(q) ||
-          m.subtitle.toLowerCase().includes(q) ||
-          m.tags.some((t) => t.toLowerCase().includes(q)),
-      )
-  }, [category, search])
+  const categoryCounts = useMemo(() => buildCategoryCounts(), [])
+  const filtered = useMemo(
+    () => filterModels(category, search),
+    [category, search],
+  )
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -112,41 +173,13 @@ export function CatalogPage() {
         </p>
       </div>
 
-      {/* Search */}
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar por nome, descrição ou tag..."
-          className="w-full pl-10 pr-4 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-blue-600 transition-colors"
-        />
-      </div>
+      <SearchInput value={search} onChange={setSearch} />
 
-      {/* Category filters */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {filterCategories.map((cat) => (
-          <button
-            key={cat.key}
-            onClick={() => setCategory(cat.key)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              category === cat.key
-                ? 'bg-blue-600 text-white'
-                : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-            }`}
-          >
-            {cat.label}
-            <span
-              className={`ml-1.5 text-xs ${
-                category === cat.key ? 'text-blue-200' : 'text-zinc-500'
-              }`}
-            >
-              {categoryCounts[cat.key] ?? 0}
-            </span>
-          </button>
-        ))}
-      </div>
+      <CategoryFilters
+        category={category}
+        counts={categoryCounts}
+        onSelect={setCategory}
+      />
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-zinc-600">
@@ -155,8 +188,8 @@ export function CatalogPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filtered.map((model) => (
-            <ModelCard key={model.slug} model={model} />
+          {filtered.map((m) => (
+            <ModelCard key={m.slug} model={m} />
           ))}
         </div>
       )}

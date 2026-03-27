@@ -13,7 +13,6 @@ const FONT_MAP: Record<string, string> = {
 
 const FONT_DIR = '/usr/share/fonts/truetype/google'
 
-// Buffers de fontes cacheados após o primeiro fetch (browser também cacheia via HTTP)
 let fontBuffersPromise: Promise<Map<string, Uint8Array>> | null = null
 
 function getFontBuffers(): Promise<Map<string, Uint8Array>> {
@@ -43,44 +42,32 @@ function getFontBuffers(): Promise<Map<string, Uint8Array>> {
   return fontBuffersPromise
 }
 
-// Cria uma instância nova a cada render: callMain só pode ser chamado uma vez por instância
-// (o runtime C++ interno corrompe estado após a primeira execução).
-// Os buffers de fontes são cacheados em memória para que o VFS seja populado sem re-fetch.
-async function createFreshInstance() {
-  const [scad, fontBuffers] = await Promise.all([
-    createOpenSCAD({
-      print: (text: string) => console.log('[openscad]', text),
-      printErr: (text: string) => console.warn('[openscad]', text),
-    }),
-    getFontBuffers(),
-  ])
+interface EmscriptenFS {
+  mkdir(path: string): void
+  writeFile(path: string, data: string | Uint8Array): void
+}
 
-  const fs = scad.getInstance().FS
+function mkdirSafe(fs: EmscriptenFS, path: string) {
+  try {
+    fs.mkdir(path)
+  } catch {
+    /* already exists */
+  }
+}
 
-  // Emscripten inicia sem /usr — criar cada nível separadamente
-  for (const dir of [
+function setupVfs(fs: EmscriptenFS, fontBuffers: Map<string, Uint8Array>) {
+  const dirs = [
     '/usr',
     '/usr/share',
     '/usr/share/fonts',
     '/usr/share/fonts/truetype',
     FONT_DIR,
-  ]) {
-    try {
-      fs.mkdir(dir)
-    } catch {
-      /* já existe */
-    }
-  }
-  try {
-    fs.mkdir('/etc')
-  } catch {
-    /* já existe */
-  }
-  try {
-    fs.mkdir('/etc/fonts')
-  } catch {
-    /* já existe */
-  }
+    '/etc',
+    '/etc/fonts',
+    '/tmp/fc-cache',
+  ]
+  for (const dir of dirs) mkdirSafe(fs, dir)
+
   try {
     fs.writeFile(
       '/etc/fonts/fonts.conf',
@@ -92,22 +79,27 @@ async function createFreshInstance() {
 </fontconfig>`,
     )
   } catch {
-    /* sem fonts.conf — OpenSCAD usa fonte embutida */
-  }
-  try {
-    fs.mkdir('/tmp/fc-cache')
-  } catch {
-    /* já existe */
+    /* fallback to built-in font */
   }
 
   for (const [filename, buf] of fontBuffers) {
     try {
       fs.writeFile(`${FONT_DIR}/${filename}`, buf)
     } catch {
-      /* ignora falha individual */
+      /* ignore individual failure */
     }
   }
+}
 
+async function createFreshInstance() {
+  const [scad, fontBuffers] = await Promise.all([
+    createOpenSCAD({
+      print: (text: string) => console.log('[openscad]', text),
+      printErr: (text: string) => console.warn('[openscad]', text),
+    }),
+    getFontBuffers(),
+  ])
+  setupVfs(scad.getInstance().FS, fontBuffers)
   return scad
 }
 

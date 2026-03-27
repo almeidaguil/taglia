@@ -1,60 +1,40 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
-async function generateScadCode(
-  values: ParameterValues,
-  _exportParam: string,
-): Promise<string> {
-  const dataUrl = values['Image'] as string
-  if (!dataUrl || !dataUrl.startsWith('data:')) {
-    throw new Error(
-      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
-    )
-  }
-
-  const sizeMm = values['Size'] as number
-  const baseThick = values['Base_Thickness'] as number
-  const reliefHeight = values['Relief_Height'] as number
-  const threshold = values['Threshold'] as number
-  const hasHandle = values['Handle'] as boolean
-  const handleHeight = values['Handle_Height'] as number
-  const handleDiam = values['Handle_Diameter'] as number
-  const margin = values['Margin'] as number
-
-  const {
-    pointsStr,
-    pathsStr,
-    allPointsStr,
-    allPathsStr,
-    pointCount,
-    pathCount,
-  } = await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
-
-  // Estratégia: passa TODOS os paths como um único polygon() multi-path para o OpenSCAD.
-  // O OpenSCAD aplica o winding-rule nativamente (CCW = sólido, CW = buraco).
-  // Após a inversão de Y que fazemos no transform, os paths do potrace ficam com a
-  // orientação correta para o OpenSCAD — sem precisar computar níveis de aninhamento.
-  return `// Carimbo de Brigadeiro — gerado pelo Taglia
-// ${pointCount} ponto(s), ${pathCount} caminho(s)
-
-Base_Thickness  = ${baseThick};
-Relief_Height   = ${reliefHeight};
-Margin          = ${margin};
-Handle          = ${hasHandle ? 'true' : 'false'};
-Handle_Height   = ${handleHeight};
-Handle_Diameter = ${handleDiam};
-
-module shape_outer() {
-  polygon(points = ${pointsStr}, paths = ${pathsStr}, convexity = 10);
+interface StampParams {
+  pointsStr: string
+  pathsStr: string
+  allPointsStr: string
+  allPathsStr: string
+  pointCount: number
+  pathCount: number
+  baseThick: number
+  reliefHeight: number
+  margin: number
+  hasHandle: boolean
+  handleHeight: number
+  handleDiam: number
 }
 
-// Relevo: polygon multi-path com todos os caminhos do potrace.
-// OpenSCAD winding-rule: CCW = sólido, CW = buraco.
-// Overlap de 0.01mm com a base evita faces coplanares que causam "mesh not closed".
+function buildStampTemplate(p: StampParams): string {
+  return `// Carimbo de Brigadeiro — gerado pelo Taglia
+// ${p.pointCount} ponto(s), ${p.pathCount} caminho(s)
+
+Base_Thickness  = ${p.baseThick};
+Relief_Height   = ${p.reliefHeight};
+Margin          = ${p.margin};
+Handle          = ${p.hasHandle ? 'true' : 'false'};
+Handle_Height   = ${p.handleHeight};
+Handle_Diameter = ${p.handleDiam};
+
+module shape_outer() {
+  polygon(points = ${p.pointsStr}, paths = ${p.pathsStr}, convexity = 10);
+}
+
 module stamp_relief() {
   translate([0, 0, Base_Thickness - 0.01])
     linear_extrude(Relief_Height + 0.01, convexity = 10)
-      polygon(points = ${allPointsStr}, paths = ${allPathsStr}, convexity = 10);
+      polygon(points = ${p.allPointsStr}, paths = ${p.allPathsStr}, convexity = 10);
 }
 
 module stamp_body() {
@@ -78,6 +58,32 @@ if (Handle) {
   stamp_body();
 }
 `
+}
+
+async function generateScadCode(
+  values: ParameterValues,
+  _exportParam: string,
+): Promise<string> {
+  const dataUrl = values['Image'] as string
+  if (!dataUrl || !dataUrl.startsWith('data:')) {
+    throw new Error(
+      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
+    )
+  }
+
+  const sizeMm = values['Size'] as number
+  const threshold = values['Threshold'] as number
+  const traced = await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
+
+  return buildStampTemplate({
+    ...traced,
+    baseThick: values['Base_Thickness'] as number,
+    reliefHeight: values['Relief_Height'] as number,
+    margin: values['Margin'] as number,
+    hasHandle: values['Handle'] as boolean,
+    handleHeight: values['Handle_Height'] as number,
+    handleDiam: values['Handle_Diameter'] as number,
+  })
 }
 
 export const imageBrigadeiroStamp: ModelDefinition = {
