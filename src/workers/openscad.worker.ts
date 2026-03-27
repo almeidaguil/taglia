@@ -22,7 +22,8 @@ function getFontBuffers(): Promise<Map<string, Uint8Array>> {
       const buffers = new Map<string, Uint8Array>()
       const results = await Promise.allSettled(
         Object.keys(FONT_MAP).map(async (filename) => {
-          const url = new URL(`/fonts/${filename}`, self.location.origin).href
+          const base = import.meta.env.BASE_URL || '/'
+          const url = new URL(`${base}fonts/${filename}`, self.location.origin).href
           const resp = await fetch(url)
           if (!resp.ok) throw new Error(`Font não encontrada: ${filename}`)
           const buf = await resp.arrayBuffer()
