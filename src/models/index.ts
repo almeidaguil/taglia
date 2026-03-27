@@ -78,7 +78,9 @@ export function getModel(slug: string): ModelDefinition | undefined {
   return models.find((m) => m.slug === slug)
 }
 
-export function getDefaultValues(model: ModelDefinition): Record<string, string | number | boolean> {
+export function getDefaultValues(
+  model: ModelDefinition,
+): Record<string, string | number | boolean> {
   const values: Record<string, string | number | boolean> = {}
   for (const section of model.sections) {
     for (const [name, param] of Object.entries(section.parameters)) {

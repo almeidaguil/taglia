@@ -4,7 +4,8 @@ export const circleNfcKeychain: ModelDefinition = {
   id: 'circle-nfc-keychain',
   slug: 'circle-nfc-keychain',
   title: 'Chaveiro NFC Circular',
-  subtitle: 'Chaveiro circular com cavidade para chip NFC e nome gravado. Design minimalista e funcional.',
+  subtitle:
+    'Chaveiro circular com cavidade para chip NFC e nome gravado. Design minimalista e funcional.',
   category: 'keychains',
   difficulty: 'medium',
   tags: ['chaveiro', 'nfc', 'tecnologia', 'circular', 'nome', 'personalizado'],

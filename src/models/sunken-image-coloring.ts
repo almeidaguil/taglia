@@ -1,20 +1,28 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
-async function generateScadCode(values: ParameterValues, _exportParam: string): Promise<string> {
+async function generateScadCode(
+  values: ParameterValues,
+  _exportParam: string,
+): Promise<string> {
   const dataUrl = values['Image'] as string
   if (!dataUrl || !dataUrl.startsWith('data:')) {
-    throw new Error('Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.')
+    throw new Error(
+      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
+    )
   }
 
-  const sizeMm    = values['Size'] as number
-  const margin    = values['Frame_Margin'] as number
+  const sizeMm = values['Size'] as number
+  const margin = values['Frame_Margin'] as number
   const baseThick = values['Base_Thickness'] as number
-  const depth     = values['Carve_Depth'] as number
+  const depth = values['Carve_Depth'] as number
   const threshold = values['Threshold'] as number
 
-  const { pointsStr, pathsStr, pointCount } =
-    await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
+  const { pointsStr, pathsStr, pointCount } = await traceImageToScadPolygon(
+    dataUrl,
+    sizeMm,
+    threshold,
+  )
 
   return `// Imagem Afundada (Sunken Image Coloring) — gerado pelo Taglia
 // ${pointCount} ponto(s) no contorno
@@ -49,10 +57,19 @@ export const sunkenImageColoring: ModelDefinition = {
   slug: 'sunken-image-coloring',
   title: 'Imagem Afundada',
   subtitle: 'Silhueta entalhada em placa para impressão multi-cor.',
-  description: 'Gera uma placa com a silhueta da imagem entalhada. Use troca de filamento no momento certo para preencher o entalhe com outra cor, ou preencha com resina/tinta após a impressão.',
+  description:
+    'Gera uma placa com a silhueta da imagem entalhada. Use troca de filamento no momento certo para preencher o entalhe com outra cor, ou preencha com resina/tinta após a impressão.',
   category: 'tools',
   difficulty: 'easy',
-  tags: ['imagem', 'silhueta', 'multicolor', 'entalhe', 'placa', 'relevo', 'sunken'],
+  tags: [
+    'imagem',
+    'silhueta',
+    'multicolor',
+    'entalhe',
+    'placa',
+    'relevo',
+    'sunken',
+  ],
   generateScadCode,
   exportOptions: [
     { format: 'stl', parameter: 'Plate', filename: 'sunken-image' },

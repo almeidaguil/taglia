@@ -14,11 +14,16 @@ export function ModelPage() {
   const model = getModel(slug ?? '')
 
   const [values, setValues] = useState<ParameterValues>(() =>
-    model ? getDefaultValues(model) : {}
+    model ? getDefaultValues(model) : {},
   )
   const [stlBlob, setStlBlob] = useState<Blob | null>(null)
-  const [renderedExport, setRenderedExport] = useState<ExportOption | null>(null)
-  const [downloadBlob, setDownloadBlob] = useState<{ blob: Blob; filename: string } | null>(null)
+  const [renderedExport, setRenderedExport] = useState<ExportOption | null>(
+    null,
+  )
+  const [downloadBlob, setDownloadBlob] = useState<{
+    blob: Blob
+    filename: string
+  } | null>(null)
 
   const { render, status, error } = useOpenSCAD()
 
@@ -26,23 +31,30 @@ export function ModelPage() {
     (name: string, value: string | number | boolean) => {
       setValues((prev) => ({ ...prev, [name]: value }))
     },
-    []
+    [],
   )
 
   const handleRender = useCallback(
     async (exportOption: ExportOption) => {
       if (!model) return
       try {
-        const scadCode = await buildScadCode(model, values, exportOption.parameter)
+        const scadCode = await buildScadCode(
+          model,
+          values,
+          exportOption.parameter,
+        )
         const blob = await render({ scadCode, format: exportOption.format })
         setStlBlob(exportOption.format === 'stl' ? blob : null)
         setRenderedExport(exportOption)
-        setDownloadBlob({ blob, filename: `${exportOption.filename}.${exportOption.format}` })
+        setDownloadBlob({
+          blob,
+          filename: `${exportOption.filename}.${exportOption.format}`,
+        })
       } catch (e) {
         console.error(e)
       }
     },
-    [model, values, render]
+    [model, values, render],
   )
 
   const handleDownload = useCallback(() => {
@@ -59,7 +71,10 @@ export function ModelPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
         <p className="text-zinc-500">Modelo não encontrado.</p>
-        <Link to="/" className="text-blue-400 hover:underline mt-2 inline-block">
+        <Link
+          to="/"
+          className="text-blue-400 hover:underline mt-2 inline-block"
+        >
           Voltar ao catálogo
         </Link>
       </div>
@@ -89,19 +104,28 @@ export function ModelPage() {
           </div>
 
           {/* 3D Viewer */}
-          <div className="relative bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden" style={{ height: 420 }}>
+          <div
+            className="relative bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden"
+            style={{ height: 420 }}
+          >
             {!stlBlob && !isRendering && (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-600 gap-2 pointer-events-none">
                 <Play className="w-10 h-10" />
-                <p className="text-sm">Configure os parâmetros e clique em "Gerar"</p>
+                <p className="text-sm">
+                  Configure os parâmetros e clique em "Gerar"
+                </p>
               </div>
             )}
 
             {isRendering && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950/80 z-10 gap-3">
                 <span className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                <p className="text-sm text-zinc-400">Gerando modelo com OpenSCAD...</p>
-                <p className="text-xs text-zinc-600">Isso pode levar alguns segundos</p>
+                <p className="text-sm text-zinc-400">
+                  Gerando modelo com OpenSCAD...
+                </p>
+                <p className="text-xs text-zinc-600">
+                  Isso pode levar alguns segundos
+                </p>
               </div>
             )}
 
@@ -124,7 +148,9 @@ export function ModelPage() {
             <div className="flex items-center gap-3 bg-green-950/30 border border-green-900/50 rounded-lg p-3">
               <div className="flex-1 text-sm text-green-400">
                 <span className="font-medium">Modelo pronto!</span>
-                <span className="text-green-600 ml-2 text-xs">{downloadBlob?.filename}</span>
+                <span className="text-green-600 ml-2 text-xs">
+                  {downloadBlob?.filename}
+                </span>
               </div>
               <Button onClick={handleDownload} size="sm">
                 <Download className="w-4 h-4" />
@@ -145,8 +171,14 @@ export function ModelPage() {
         {/* Right — Parameters + render buttons */}
         <div className="w-full lg:w-80 flex flex-col gap-5">
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-            <h2 className="text-sm font-semibold text-zinc-300 mb-4">Parâmetros</h2>
-            <ParameterPanel model={model} values={values} onChange={handleParamChange} />
+            <h2 className="text-sm font-semibold text-zinc-300 mb-4">
+              Parâmetros
+            </h2>
+            <ParameterPanel
+              model={model}
+              values={values}
+              onChange={handleParamChange}
+            />
           </div>
 
           {/* Render / Export buttons */}
@@ -157,7 +189,11 @@ export function ModelPage() {
             {model.exportOptions.map((opt) => (
               <Button
                 key={opt.parameter}
-                variant={renderedExport?.parameter === opt.parameter && hasResult ? 'primary' : 'secondary'}
+                variant={
+                  renderedExport?.parameter === opt.parameter && hasResult
+                    ? 'primary'
+                    : 'secondary'
+                }
                 loading={isRendering}
                 onClick={() => handleRender(opt)}
                 className="w-full justify-between"
@@ -166,14 +202,16 @@ export function ModelPage() {
                   <Play className="w-3.5 h-3.5" />
                   Gerar: {opt.parameter}
                 </span>
-                <span className="text-xs opacity-60 uppercase">{opt.format}</span>
+                <span className="text-xs opacity-60 uppercase">
+                  {opt.format}
+                </span>
               </Button>
             ))}
           </div>
 
           <p className="text-xs text-zinc-700 leading-relaxed">
-            O modelo é gerado localmente no seu browser via OpenSCAD WebAssembly.
-            Nenhum dado é enviado para servidores externos.
+            O modelo é gerado localmente no seu browser via OpenSCAD
+            WebAssembly. Nenhum dado é enviado para servidores externos.
           </p>
         </div>
       </div>

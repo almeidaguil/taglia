@@ -4,10 +4,18 @@ export const separateLettersOffset2Color: ModelDefinition = {
   id: 'separate-letters-offset-2color',
   slug: 'separate-letters-offset-2color',
   title: 'Letras Separadas - 2 Cores',
-  subtitle: 'Letras individuais 3D em 2 camadas coloridas. Digite uma letra por vez e imprima cada peça separadamente.',
+  subtitle:
+    'Letras individuais 3D em 2 camadas coloridas. Digite uma letra por vez e imprima cada peça separadamente.',
   category: 'signs',
   difficulty: 'easy',
-  tags: ['letras', 'alfabeto', 'separado', 'decoração', '2 cores', 'personalizado'],
+  tags: [
+    'letras',
+    'alfabeto',
+    'separado',
+    'decoração',
+    '2 cores',
+    'personalizado',
+  ],
   exportOptions: [
     { format: 'stl', parameter: 'Base', filename: 'Letter-2C-Base' },
     { format: 'stl', parameter: 'Top', filename: 'Letter-2C-Top' },

@@ -4,10 +4,19 @@ export const wordHeart2Colors: ModelDefinition = {
   id: 'word-heart-2colors',
   slug: 'word-heart-2colors',
   title: 'Letreiro com Coração',
-  subtitle: 'Dois nomes com um coração entre eles. Perfeito para casais e datas especiais.',
+  subtitle:
+    'Dois nomes com um coração entre eles. Perfeito para casais e datas especiais.',
   category: 'signs',
   difficulty: 'easy',
-  tags: ['coração', 'casal', 'amor', 'letreiro', 'decoração', 'presente', 'aniversário'],
+  tags: [
+    'coração',
+    'casal',
+    'amor',
+    'letreiro',
+    'decoração',
+    'presente',
+    'aniversário',
+  ],
   exportOptions: [
     { format: 'stl', parameter: 'Base', filename: 'WordHeart-Base' },
     { format: 'stl', parameter: 'Top', filename: 'WordHeart-Top' },

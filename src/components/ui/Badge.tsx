@@ -15,7 +15,7 @@ export function Badge({ children, variant = 'default' }: BadgeProps) {
           'bg-blue-900/50 text-blue-300': variant === 'blue',
           'bg-green-900/50 text-green-300': variant === 'green',
           'bg-yellow-900/50 text-yellow-300': variant === 'yellow',
-        }
+        },
       )}
     >
       {children}

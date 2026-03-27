@@ -4,10 +4,19 @@ export const scratchOffCounter: ModelDefinition = {
   id: 'scratch-off-counter',
   slug: 'scratch-off-counter',
   title: 'Contador Raspadinha',
-  subtitle: 'Grade de círculos numerados para riscar. Use como calendário do advento, tracker de desafios ou contador.',
+  subtitle:
+    'Grade de círculos numerados para riscar. Use como calendário do advento, tracker de desafios ou contador.',
   category: 'tools',
   difficulty: 'easy',
-  tags: ['contador', 'raspadinha', 'calendário', 'advento', 'desafio', 'tracker', 'números'],
+  tags: [
+    'contador',
+    'raspadinha',
+    'calendário',
+    'advento',
+    'desafio',
+    'tracker',
+    'números',
+  ],
   exportOptions: [
     { format: 'stl', parameter: 'Base', filename: 'ScratchCounter' },
   ],

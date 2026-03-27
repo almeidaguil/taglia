@@ -7,24 +7,27 @@ import type { ModelDefinition, ParameterValues } from '../types'
 export async function buildScadCode(
   model: ModelDefinition,
   values: ParameterValues,
-  exportParam: string
+  exportParam: string,
 ): Promise<string> {
   // Modelos baseados em imagem geram o SCAD dinamicamente
   if (model.generateScadCode) {
     return model.generateScadCode(values, exportParam)
   }
 
-  if (!model.scadFile) throw new Error(`Modelo "${model.id}" não tem scadFile nem generateScadCode`)
+  if (!model.scadFile)
+    throw new Error(
+      `Modelo "${model.id}" não tem scadFile nem generateScadCode`,
+    )
 
   const scadUrl = new URL(`../scad/${model.scadFile}`, import.meta.url).href
   const response = await fetch(scadUrl)
-  if (!response.ok) throw new Error(`Failed to load SCAD file: ${model.scadFile}`)
+  if (!response.ok)
+    throw new Error(`Failed to load SCAD file: ${model.scadFile}`)
 
   const template = await response.text()
 
   return injectParameters(template, values, exportParam)
 }
-
 
 /**
  * Replace parameter default lines in the template with user values.
@@ -33,7 +36,7 @@ export async function buildScadCode(
 function injectParameters(
   template: string,
   values: ParameterValues,
-  exportParam: string
+  exportParam: string,
 ): string {
   const allValues = { ...values, Part: exportParam }
   let result = template
@@ -42,7 +45,7 @@ function injectParameters(
     // Match: key = <value>;  (with optional spaces and inline comment)
     const regex = new RegExp(
       `^(${escapeRegex(key)}\\s*=\\s*)([^;]+)(;.*)$`,
-      'gm'
+      'gm',
     )
     const replacement = `$1${scadValue(value)}$3`
     result = result.replace(regex, replacement)

@@ -4,10 +4,18 @@ export const wordOffset3Color: ModelDefinition = {
   id: 'word-offset-3color',
   slug: 'word-offset-3color',
   title: 'Letreiro de Palavra - 3 Camadas',
-  subtitle: 'Letreiro multicolorido com efeito 3D deslocado. Imprime em 3 partes: base, meio e topo.',
+  subtitle:
+    'Letreiro multicolorido com efeito 3D deslocado. Imprime em 3 partes: base, meio e topo.',
   category: 'signs',
   difficulty: 'easy',
-  tags: ['palavra', 'letreiro', 'texto', 'decoração', 'presente', 'aniversário'],
+  tags: [
+    'palavra',
+    'letreiro',
+    'texto',
+    'decoração',
+    'presente',
+    'aniversário',
+  ],
   exportOptions: [
     { format: 'stl', parameter: 'Base', filename: 'Word-3Color-Base' },
     { format: 'stl', parameter: 'Middle', filename: 'Word-3Color-Middle' },

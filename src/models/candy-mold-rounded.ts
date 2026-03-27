@@ -4,10 +4,18 @@ export const candyMoldRounded: ModelDefinition = {
   id: 'candy-mold-rounded',
   slug: 'candy-mold-rounded',
   title: 'Forminha Arredondada',
-  subtitle: 'Molde com cavidades cilíndricas de fundo arredondado para docinhos com formato mais suave.',
+  subtitle:
+    'Molde com cavidades cilíndricas de fundo arredondado para docinhos com formato mais suave.',
   category: 'kitchen',
   difficulty: 'easy',
-  tags: ['brigadeiro', 'doce', 'molde', 'cozinha', 'confeitaria', 'arredondado'],
+  tags: [
+    'brigadeiro',
+    'doce',
+    'molde',
+    'cozinha',
+    'confeitaria',
+    'arredondado',
+  ],
   exportOptions: [
     { format: 'stl', parameter: 'Base', filename: 'CandyMold-Rounded' },
   ],

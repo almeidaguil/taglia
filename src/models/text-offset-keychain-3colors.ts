@@ -4,7 +4,8 @@ export const textOffsetKeychain3Colors: ModelDefinition = {
   id: 'text-offset-keychain-3colors',
   slug: 'text-offset-keychain-3colors',
   title: 'Chaveiro 3 Cores',
-  subtitle: 'Chaveiro tricolorido com texto em relevo duplo. Efeito 3D impressionante.',
+  subtitle:
+    'Chaveiro tricolorido com texto em relevo duplo. Efeito 3D impressionante.',
   category: 'keychains',
   difficulty: 'easy',
   tags: ['chaveiro', '3 cores', 'nome', 'relevo', 'presente', 'personalizado'],
@@ -43,7 +44,12 @@ export const textOffsetKeychain3Colors: ModelDefinition = {
     },
     {
       name: 'Tamanho',
-      parameterOrder: ['Name_Size', 'Rect_Width', 'Rect_Height', 'Corner_Radius'],
+      parameterOrder: [
+        'Name_Size',
+        'Rect_Width',
+        'Rect_Height',
+        'Corner_Radius',
+      ],
       parameters: {
         Name_Size: {
           type: 'number',
@@ -81,7 +87,13 @@ export const textOffsetKeychain3Colors: ModelDefinition = {
     },
     {
       name: 'Ajustes',
-      parameterOrder: ['Offset', 'Tolerance', 'Base_Height', 'Layer_Height', 'Ring_Hole_D'],
+      parameterOrder: [
+        'Offset',
+        'Tolerance',
+        'Base_Height',
+        'Layer_Height',
+        'Ring_Hole_D',
+      ],
       parameters: {
         Offset: {
           type: 'number',

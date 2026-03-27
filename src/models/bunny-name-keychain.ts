@@ -4,7 +4,8 @@ export const bunnyNameKeychain: ModelDefinition = {
   id: 'bunny-name-keychain',
   slug: 'bunny-name-keychain',
   title: 'Chaveiro Coelho',
-  subtitle: 'Adorável chaveiro em formato de coelho com seu nome gravado. Ideal para crianças e amantes de animais.',
+  subtitle:
+    'Adorável chaveiro em formato de coelho com seu nome gravado. Ideal para crianças e amantes de animais.',
   category: 'keychains',
   difficulty: 'easy',
   tags: ['chaveiro', 'coelho', 'fofo', 'nome', 'presente', 'criança', 'animal'],

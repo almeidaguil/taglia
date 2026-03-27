@@ -1,4 +1,10 @@
-export type ParameterType = 'string' | 'number' | 'boolean' | 'select' | 'color' | 'image'
+export type ParameterType =
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'select'
+  | 'color'
+  | 'image'
 
 export interface BaseParameter {
   type: ParameterType
@@ -83,7 +89,10 @@ export interface ModelDefinition {
   /** Arquivo .scad template (modelos padrão) */
   scadFile?: string
   /** Geração dinâmica de código SCAD (modelos baseados em imagem) */
-  generateScadCode?: (values: ParameterValues, exportParam: string) => Promise<string>
+  generateScadCode?: (
+    values: ParameterValues,
+    exportParam: string,
+  ) => Promise<string>
   coverImage?: string
   difficulty: 'easy' | 'medium' | 'hard'
 }

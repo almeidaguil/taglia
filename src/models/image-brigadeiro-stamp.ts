@@ -1,23 +1,34 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
-async function generateScadCode(values: ParameterValues, _exportParam: string): Promise<string> {
+async function generateScadCode(
+  values: ParameterValues,
+  _exportParam: string,
+): Promise<string> {
   const dataUrl = values['Image'] as string
   if (!dataUrl || !dataUrl.startsWith('data:')) {
-    throw new Error('Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.')
+    throw new Error(
+      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
+    )
   }
 
-  const sizeMm       = values['Size'] as number
-  const baseThick    = values['Base_Thickness'] as number
+  const sizeMm = values['Size'] as number
+  const baseThick = values['Base_Thickness'] as number
   const reliefHeight = values['Relief_Height'] as number
-  const threshold    = values['Threshold'] as number
-  const hasHandle    = values['Handle'] as boolean
+  const threshold = values['Threshold'] as number
+  const hasHandle = values['Handle'] as boolean
   const handleHeight = values['Handle_Height'] as number
-  const handleDiam   = values['Handle_Diameter'] as number
-  const margin       = values['Margin'] as number
+  const handleDiam = values['Handle_Diameter'] as number
+  const margin = values['Margin'] as number
 
-  const { pointsStr, pathsStr, allPointsStr, allPathsStr, pointCount, pathCount } =
-    await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
+  const {
+    pointsStr,
+    pathsStr,
+    allPointsStr,
+    allPathsStr,
+    pointCount,
+    pathCount,
+  } = await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
 
   // Estratégia: passa TODOS os paths como um único polygon() multi-path para o OpenSCAD.
   // O OpenSCAD aplica o winding-rule nativamente (CCW = sólido, CW = buraco).
@@ -73,11 +84,21 @@ export const imageBrigadeiroStamp: ModelDefinition = {
   id: 'image-brigadeiro-stamp',
   slug: 'image-brigadeiro-stamp',
   title: 'Carimbo de Brigadeiro',
-  subtitle: 'Carimbo personalizado para brigadeiros e doces a partir de qualquer imagem.',
-  description: 'Faça upload de uma silhueta em preto e branco para gerar o carimbo. O relevo deixa uma impressão no brigadeiro quando pressionado. Funciona também como carimbo de argila ou EVA.',
+  subtitle:
+    'Carimbo personalizado para brigadeiros e doces a partir de qualquer imagem.',
+  description:
+    'Faça upload de uma silhueta em preto e branco para gerar o carimbo. O relevo deixa uma impressão no brigadeiro quando pressionado. Funciona também como carimbo de argila ou EVA.',
   category: 'kitchen',
   difficulty: 'easy',
-  tags: ['carimbo', 'brigadeiro', 'doce', 'stamp', 'imagem', 'silhueta', 'confeitaria'],
+  tags: [
+    'carimbo',
+    'brigadeiro',
+    'doce',
+    'stamp',
+    'imagem',
+    'silhueta',
+    'confeitaria',
+  ],
   generateScadCode,
   exportOptions: [
     { format: 'stl', parameter: 'Stamp', filename: 'brigadeiro-stamp' },

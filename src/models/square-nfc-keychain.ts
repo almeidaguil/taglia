@@ -4,7 +4,8 @@ export const squareNfcKeychain: ModelDefinition = {
   id: 'square-nfc-keychain',
   slug: 'square-nfc-keychain',
   title: 'Chaveiro NFC Quadrado',
-  subtitle: 'Chaveiro quadrado com cavidade interna para chip NFC e nome gravado. Technologia + estilo.',
+  subtitle:
+    'Chaveiro quadrado com cavidade interna para chip NFC e nome gravado. Technologia + estilo.',
   category: 'keychains',
   difficulty: 'medium',
   tags: ['chaveiro', 'nfc', 'tecnologia', 'quadrado', 'nome', 'personalizado'],

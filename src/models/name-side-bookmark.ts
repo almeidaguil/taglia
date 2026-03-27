@@ -1,26 +1,34 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
-async function generateScadCode(values: ParameterValues, _exportParam: string): Promise<string> {
+async function generateScadCode(
+  values: ParameterValues,
+  _exportParam: string,
+): Promise<string> {
   const dataUrl = values['Image'] as string
   if (!dataUrl || !dataUrl.startsWith('data:')) {
-    throw new Error('Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.')
+    throw new Error(
+      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
+    )
   }
 
-  const name            = values['Name'] as string
-  const font            = values['Font'] as string
-  const sizeMm          = values['Size'] as number
-  const bookmarkWidth   = values['Bookmark_Width'] as number
-  const bookmarkLength  = values['Bookmark_Length'] as number
-  const thickness       = values['Thickness'] as number
-  const nameSize        = values['Name_Size'] as number
-  const nameDepth       = values['Name_Depth'] as number
-  const clipLength      = values['Clip_Length'] as number
-  const pageThickness   = values['Page_Thickness'] as number
-  const threshold       = values['Threshold'] as number
+  const name = values['Name'] as string
+  const font = values['Font'] as string
+  const sizeMm = values['Size'] as number
+  const bookmarkWidth = values['Bookmark_Width'] as number
+  const bookmarkLength = values['Bookmark_Length'] as number
+  const thickness = values['Thickness'] as number
+  const nameSize = values['Name_Size'] as number
+  const nameDepth = values['Name_Depth'] as number
+  const clipLength = values['Clip_Length'] as number
+  const pageThickness = values['Page_Thickness'] as number
+  const threshold = values['Threshold'] as number
 
-  const { pointsStr, pathsStr, pointCount } =
-    await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
+  const { pointsStr, pathsStr, pointCount } = await traceImageToScadPolygon(
+    dataUrl,
+    sizeMm,
+    threshold,
+  )
 
   return `// Marcador de Livro — gerado pelo Taglia
 // ${pointCount} ponto(s) no contorno da silhueta
@@ -83,7 +91,8 @@ export const nameSideBookmark: ModelDefinition = {
   slug: 'name-side-bookmark',
   title: 'Marcador de Livro',
   subtitle: 'Marcador de página com nome e imagem personalizada.',
-  description: 'Gera um marcador de livro com silhueta decorativa no topo e nome gravado no corpo. Inclui encaixe para prender na página.',
+  description:
+    'Gera um marcador de livro com silhueta decorativa no topo e nome gravado no corpo. Inclui encaixe para prender na página.',
   category: 'tools',
   difficulty: 'easy',
   tags: ['marcador', 'livro', 'bookmark', 'nome', 'imagem', 'personalizado'],
@@ -149,7 +158,12 @@ export const nameSideBookmark: ModelDefinition = {
     },
     {
       name: 'Tamanho',
-      parameterOrder: ['Size', 'Bookmark_Width', 'Bookmark_Length', 'Thickness'],
+      parameterOrder: [
+        'Size',
+        'Bookmark_Width',
+        'Bookmark_Length',
+        'Thickness',
+      ],
       parameters: {
         Size: {
           type: 'number',

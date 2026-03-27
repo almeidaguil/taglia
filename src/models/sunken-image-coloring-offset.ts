@@ -1,22 +1,30 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
-async function generateScadCode(values: ParameterValues, _exportParam: string): Promise<string> {
+async function generateScadCode(
+  values: ParameterValues,
+  _exportParam: string,
+): Promise<string> {
   const dataUrl = values['Image'] as string
   if (!dataUrl || !dataUrl.startsWith('data:')) {
-    throw new Error('Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.')
+    throw new Error(
+      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
+    )
   }
 
-  const sizeMm      = values['Size'] as number
+  const sizeMm = values['Size'] as number
   const frameMargin = values['Frame_Margin'] as number
-  const layers      = values['Layers'] as number
-  const layerH      = values['Layer_Height'] as number
-  const offsetStep  = values['Offset_Step'] as number
-  const carveDepth  = values['Carve_Depth'] as number
-  const threshold   = values['Threshold'] as number
+  const layers = values['Layers'] as number
+  const layerH = values['Layer_Height'] as number
+  const offsetStep = values['Offset_Step'] as number
+  const carveDepth = values['Carve_Depth'] as number
+  const threshold = values['Threshold'] as number
 
-  const { pointsStr, pathsStr, pointCount } =
-    await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
+  const { pointsStr, pathsStr, pointCount } = await traceImageToScadPolygon(
+    dataUrl,
+    sizeMm,
+    threshold,
+  )
 
   // Gera camadas offset (mesma lógica de image-to3d-offset, mas com frameMargin adicionado).
   // Camada 0 = base (maior), camada layers-1 = topo (menor, mais próxima da silhueta).
@@ -24,12 +32,12 @@ async function generateScadCode(values: ParameterValues, _exportParam: string): 
   for (let i = 0; i < layers; i++) {
     const r = (layers - 1 - i) * offsetStep + frameMargin
     const z = i * layerH
-    const h = layers * layerH - z  // cada camada se estende até o topo
+    const h = layers * layerH - z // cada camada se estende até o topo
     layerLines.push(
       `    // Camada ${i + 1} (z=${z.toFixed(1)}mm, offset r=${r.toFixed(1)}mm)\n` +
-      `    translate([0, 0, ${z.toFixed(1)}])\n` +
-      `      linear_extrude(${h.toFixed(1)}, convexity = 10)\n` +
-      `        offset(r = ${r.toFixed(1)}) shape_outer();`
+        `    translate([0, 0, ${z.toFixed(1)}])\n` +
+        `      linear_extrude(${h.toFixed(1)}, convexity = 10)\n` +
+        `        offset(r = ${r.toFixed(1)}) shape_outer();`,
     )
   }
 
@@ -69,10 +77,19 @@ export const sunkenImageColoringOffset: ModelDefinition = {
   slug: 'sunken-image-coloring-offset',
   title: 'Imagem Afundada com Offset',
   subtitle: 'Silhueta entalhada em placa com bordas offset multi-cor.',
-  description: 'Gera uma placa com camadas offset escalonadas e a silhueta da imagem entalhada no centro. Cada camada pode ser impressa em uma cor diferente para efeito visual rico.',
+  description:
+    'Gera uma placa com camadas offset escalonadas e a silhueta da imagem entalhada no centro. Cada camada pode ser impressa em uma cor diferente para efeito visual rico.',
   category: 'tools',
   difficulty: 'easy',
-  tags: ['imagem', 'silhueta', 'offset', 'multicolor', 'entalhe', 'sunken', 'camadas'],
+  tags: [
+    'imagem',
+    'silhueta',
+    'offset',
+    'multicolor',
+    'entalhe',
+    'sunken',
+    'camadas',
+  ],
   generateScadCode,
   exportOptions: [
     { format: 'stl', parameter: 'Model', filename: 'sunken-image-offset' },

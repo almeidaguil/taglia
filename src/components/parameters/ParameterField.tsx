@@ -8,7 +8,12 @@ interface ParameterFieldProps {
   onChange: (name: string, value: string | number | boolean) => void
 }
 
-export function ParameterField({ name, param, value, onChange }: ParameterFieldProps) {
+export function ParameterField({
+  name,
+  param,
+  value,
+  onChange,
+}: ParameterFieldProps) {
   const label = param.description || name
 
   const inputClass =
@@ -156,9 +161,18 @@ export function ParameterField({ name, param, value, onChange }: ParameterFieldP
             </>
           ) : (
             <div className="flex flex-col items-center gap-1 text-zinc-500 pointer-events-none select-none">
-              <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+              <svg
+                className="w-7 h-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                />
               </svg>
               <span className="text-xs text-center px-2">
                 Arraste uma imagem ou clique para enviar

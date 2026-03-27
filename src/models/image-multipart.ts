@@ -1,14 +1,19 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
-async function generateScadCode(values: ParameterValues, exportParam: string): Promise<string> {
+async function generateScadCode(
+  values: ParameterValues,
+  exportParam: string,
+): Promise<string> {
   const dataUrl = values['Image'] as string
   if (!dataUrl || !dataUrl.startsWith('data:')) {
-    throw new Error('Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.')
+    throw new Error(
+      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
+    )
   }
 
-  const sizeMm    = values['Size'] as number
-  const parts     = values['Parts'] as number
+  const sizeMm = values['Size'] as number
+  const parts = values['Parts'] as number
   const direction = values['Direction'] as string
   const thickness = values['Thickness'] as number
   const tolerance = values['Tolerance'] as number
@@ -25,8 +30,11 @@ async function generateScadCode(values: ParameterValues, exportParam: string): P
 `
   }
 
-  const { pointsStr, pathsStr, pointCount } =
-    await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
+  const { pointsStr, pathsStr, pointCount } = await traceImageToScadPolygon(
+    dataUrl,
+    sizeMm,
+    threshold,
+  )
 
   // Bounding box generosa para cobrir toda a silhueta
   const bbox = sizeMm * 1.5
@@ -73,7 +81,8 @@ export const imageMultipart: ModelDefinition = {
   slug: 'image-multipart',
   title: 'Imagem Multipartes',
   subtitle: 'Silhueta dividida em partes para impressão multi-cor.',
-  description: 'Divide a silhueta da imagem em faixas horizontais ou verticais. Cada faixa é uma peça separada que pode ser impressa em uma cor diferente. Monte as peças para criar um efeito de cores listrado.',
+  description:
+    'Divide a silhueta da imagem em faixas horizontais ou verticais. Cada faixa é uma peça separada que pode ser impressa em uma cor diferente. Monte as peças para criar um efeito de cores listrado.',
   category: 'tools',
   difficulty: 'medium',
   tags: ['imagem', 'silhueta', 'multicolor', 'partes', 'faixas', 'multipart'],

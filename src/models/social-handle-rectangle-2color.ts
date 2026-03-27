@@ -4,10 +4,19 @@ export const socialHandleRectangle2Color: ModelDefinition = {
   id: 'social-handle-rectangle-2color',
   slug: 'social-handle-rectangle-2color',
   title: 'Social Handle Retângulo - 2 Cores',
-  subtitle: 'Handle das redes sociais sobre base retangular em 2 camadas coloridas.',
+  subtitle:
+    'Handle das redes sociais sobre base retangular em 2 camadas coloridas.',
   category: 'signs',
   difficulty: 'easy',
-  tags: ['instagram', 'tiktok', 'social', 'handle', 'retângulo', 'letreiro', '2 cores'],
+  tags: [
+    'instagram',
+    'tiktok',
+    'social',
+    'handle',
+    'retângulo',
+    'letreiro',
+    '2 cores',
+  ],
   exportOptions: [
     { format: 'stl', parameter: 'Base', filename: 'SocialRect-2C-Base' },
     { format: 'stl', parameter: 'Top', filename: 'SocialRect-2C-Top' },
@@ -47,7 +56,12 @@ export const socialHandleRectangle2Color: ModelDefinition = {
     },
     {
       name: 'Tamanho',
-      parameterOrder: ['Target_Size', 'Rect_Width', 'Rect_Height', 'Corner_Radius'],
+      parameterOrder: [
+        'Target_Size',
+        'Rect_Width',
+        'Rect_Height',
+        'Corner_Radius',
+      ],
       parameters: {
         Target_Size: {
           type: 'number',

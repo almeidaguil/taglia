@@ -1,23 +1,31 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
-async function generateScadCode(values: ParameterValues, exportParam: string): Promise<string> {
+async function generateScadCode(
+  values: ParameterValues,
+  exportParam: string,
+): Promise<string> {
   const dataUrl = values['Image'] as string
   if (!dataUrl || !dataUrl.startsWith('data:')) {
-    throw new Error('Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.')
+    throw new Error(
+      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
+    )
   }
 
-  const sizeMm      = values['Size'] as number
-  const cols        = values['Cols'] as number
-  const rows        = values['Rows'] as number
-  const thickness   = values['Thickness'] as number
-  const cutWidth    = values['Cut_Width'] as number
-  const frameWidth  = values['Frame_Width'] as number
+  const sizeMm = values['Size'] as number
+  const cols = values['Cols'] as number
+  const rows = values['Rows'] as number
+  const thickness = values['Thickness'] as number
+  const cutWidth = values['Cut_Width'] as number
+  const frameWidth = values['Frame_Width'] as number
   const frameHeight = values['Frame_Height'] as number
-  const threshold   = values['Threshold'] as number
+  const threshold = values['Threshold'] as number
 
-  const { pointsStr, pathsStr, pointCount } =
-    await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
+  const { pointsStr, pathsStr, pointCount } = await traceImageToScadPolygon(
+    dataUrl,
+    sizeMm,
+    threshold,
+  )
 
   // BBox um pouco maior que a silhueta para garantir cortes completos
   const bbox = (sizeMm * 1.1).toFixed(2)
@@ -68,12 +76,16 @@ module frame() {
     }
 }
 
-${isPuzzle ? `// Peças do quebra-cabeça (placa com cortes)
+${
+  isPuzzle
+    ? `// Peças do quebra-cabeça (placa com cortes)
 difference() {
   puzzle_plate();
   grid_cuts();
-}` : `// Moldura do quebra-cabeça
-frame();`}
+}`
+    : `// Moldura do quebra-cabeça
+frame();`
+}
 `
 }
 
@@ -82,10 +94,18 @@ export const imagePuzzle: ModelDefinition = {
   slug: 'image-puzzle',
   title: 'Quebra-cabeça de Imagem',
   subtitle: 'Quebra-cabeça personalizado a partir de qualquer silhueta.',
-  description: 'Gera um quebra-cabeça plano com a forma da silhueta, dividido em grade. Inclui moldura opcional para montar. Imprima cada peça em uma cor diferente!',
+  description:
+    'Gera um quebra-cabeça plano com a forma da silhueta, dividido em grade. Inclui moldura opcional para montar. Imprima cada peça em uma cor diferente!',
   category: 'tools',
   difficulty: 'medium',
-  tags: ['puzzle', 'quebra-cabeça', 'imagem', 'silhueta', 'jogo', 'personalizado'],
+  tags: [
+    'puzzle',
+    'quebra-cabeça',
+    'imagem',
+    'silhueta',
+    'jogo',
+    'personalizado',
+  ],
   generateScadCode,
   exportOptions: [
     { format: 'stl', parameter: 'Puzzle', filename: 'puzzle-pieces' },
