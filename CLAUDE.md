@@ -123,4 +123,6 @@ npm run build    # produção em /dist
 - O OpenSCAD WASM (~13MB) carrega uma vez e fica em cache no Web Worker
 - Os headers COOP/COEP estão configurados no vite.config.ts (necessário para SharedArrayBuffer do WASM)
 - Import type obrigatório por causa do verbatimModuleSyntax no tsconfig
-- Para GitHub Pages: `base: './'` já está configurado no vite.config.ts
+- Para GitHub Pages: `base: '/taglia/'` no vite.config.ts (subpath absoluto obrigatório)
+- Ver `CONTRIBUTING.md` para workflow de Git, padrões de commit e convenções
+- Ver `PROJECT_STATUS.md` para estado atual do projeto e histórico de sessões
