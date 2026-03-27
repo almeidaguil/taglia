@@ -134,4 +134,7 @@ powershell -ExecutionPolicy Bypass -File setup.ps1
 - Import type obrigatório por causa do verbatimModuleSyntax no tsconfig
 - Para GitHub Pages: `base: '/taglia/'` no vite.config.ts (subpath absoluto obrigatório)
 - Ver `CONTRIBUTING.md` para workflow de Git, padrões de commit e convenções
+- Ver `STYLE_GUIDE.md` para padrões de código (80 col, Clean Code)
 - Ver `PROJECT_STATUS.md` para estado atual do projeto e histórico de sessões
+- Ver `.memory/MEMORY.md` para memória persistente do projeto (decisões, feedbacks, contexto)
+- A pasta `.memory/` deve ser atualizada antes de cada commit se houver mudança de contexto
