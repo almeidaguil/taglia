@@ -1,7 +1,7 @@
+﻿# ============================================================
+# Taglia - Setup do Ambiente (Windows PowerShell)
 # ============================================================
-# Taglia — Setup do Ambiente (Windows PowerShell)
-# ============================================================
-# Execução:  powershell -ExecutionPolicy Bypass -File setup.ps1
+# Execucao:  powershell -ExecutionPolicy Bypass -File setup.ps1
 # ============================================================
 
 $ErrorActionPreference = "Stop"
@@ -33,23 +33,21 @@ function Pause-Menu {
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
-# ----- verificação -----
+# ----- verificacao -----
 
 function Invoke-Verify {
-    Write-Title "Verificação do Ambiente"
+    Write-Title "Verificacao do Ambiente"
 
     $allOk = $true
 
-    # Git
     if (Test-Command "git") {
         $gitVersion = (git --version) -replace "git version ", ""
         Write-Ok "Git instalado ($gitVersion)"
     } else {
-        Write-Fail "Git não encontrado"
+        Write-Fail "Git nao encontrado"
         $allOk = $false
     }
 
-    # Node.js
     if (Test-Command "node") {
         $nodeVersion = (node --version) -replace "v", ""
         $nodeMajor   = [int]($nodeVersion.Split(".")[0])
@@ -60,20 +58,18 @@ function Invoke-Verify {
             $allOk = $false
         }
     } else {
-        Write-Fail "Node.js não encontrado"
+        Write-Fail "Node.js nao encontrado"
         $allOk = $false
     }
 
-    # npm
     if (Test-Command "npm") {
         $npmVersion = npm --version
         Write-Ok "npm instalado (v$npmVersion)"
     } else {
-        Write-Fail "npm não encontrado"
+        Write-Fail "npm nao encontrado"
         $allOk = $false
     }
 
-    # GitHub CLI
     if (Test-Command "gh") {
         $ghVersion = (gh --version | Select-Object -First 1) -replace "gh version ", ""
         Write-Ok "GitHub CLI instalado ($ghVersion)"
@@ -82,28 +78,26 @@ function Invoke-Verify {
         if ($LASTEXITCODE -eq 0) {
             Write-Ok "GitHub CLI autenticado"
         } else {
-            Write-Warn "GitHub CLI instalado, mas não autenticado (rode: gh auth login)"
+            Write-Warn "GitHub CLI instalado, mas nao autenticado (rode: gh auth login)"
         }
     } else {
-        Write-Warn "GitHub CLI não instalado (opcional, usado para PRs)"
+        Write-Warn "GitHub CLI nao instalado (opcional, usado para PRs)"
     }
 
-    # node_modules
     if (Test-Path "node_modules") {
-        Write-Ok "Dependências instaladas (node_modules existe)"
+        Write-Ok "Dependencias instaladas (node_modules existe)"
     } else {
-        Write-Warn "Dependências não instaladas (rode: npm install)"
+        Write-Warn "Dependencias nao instaladas (rode: npm install)"
         $allOk = $false
     }
 
-    # Build test
     if (Test-Path "node_modules") {
         Write-Info "Testando build..."
         $buildResult = npm run build 2>&1
         if ($LASTEXITCODE -eq 0) {
             Write-Ok "Build executado com sucesso"
         } else {
-            Write-Fail "Build falhou — verifique os erros acima"
+            Write-Fail "Build falhou - verifique os erros acima"
             $allOk = $false
         }
     }
@@ -119,11 +113,11 @@ function Invoke-Verify {
 # ----- instaladores -----
 
 function Install-Git {
-    Write-Title "Instalação do Git"
+    Write-Title "Instalacao do Git"
 
     if (Test-Command "git") {
         $v = (git --version) -replace "git version ", ""
-        Write-Ok "Git já instalado ($v)"
+        Write-Ok "Git ja instalado ($v)"
         return
     }
 
@@ -137,18 +131,18 @@ function Install-Git {
             Write-Warn "Git instalado. Feche e reabra o terminal para usar."
         }
     } else {
-        Write-Fail "winget não disponível. Instale o Git manualmente: https://git-scm.com/download/win"
+        Write-Fail "winget nao disponivel. Instale o Git manualmente: https://git-scm.com/download/win"
     }
 }
 
 function Install-Node {
-    Write-Title "Instalação do Node.js"
+    Write-Title "Instalacao do Node.js"
 
     if (Test-Command "node") {
         $v = (node --version) -replace "v", ""
         $major = [int]($v.Split(".")[0])
         if ($major -ge $HOST_MIN_NODE) {
-            Write-Ok "Node.js já instalado (v$v)"
+            Write-Ok "Node.js ja instalado (v$v)"
             return
         }
         Write-Warn "Node.js v$v encontrado, atualizando..."
@@ -165,16 +159,16 @@ function Install-Node {
             Write-Warn "Node.js instalado. Feche e reabra o terminal para usar."
         }
     } else {
-        Write-Fail "winget não disponível. Instale o Node.js manualmente: https://nodejs.org"
+        Write-Fail "winget nao disponivel. Instale o Node.js manualmente: https://nodejs.org"
     }
 }
 
 function Install-GhCli {
-    Write-Title "Instalação do GitHub CLI"
+    Write-Title "Instalacao do GitHub CLI"
 
     if (Test-Command "gh") {
         $v = (gh --version | Select-Object -First 1) -replace "gh version ", ""
-        Write-Ok "GitHub CLI já instalado ($v)"
+        Write-Ok "GitHub CLI ja instalado ($v)"
         return
     }
 
@@ -189,62 +183,60 @@ function Install-GhCli {
             Write-Warn "GitHub CLI instalado. Feche e reabra o terminal para usar."
         }
     } else {
-        Write-Fail "winget não disponível. Instale manualmente: https://cli.github.com"
+        Write-Fail "winget nao disponivel. Instale manualmente: https://cli.github.com"
     }
 }
 
 function Install-Dependencies {
-    Write-Title "Instalação das Dependências do Projeto"
+    Write-Title "Instalacao das Dependencias do Projeto"
 
     if (-not (Test-Command "npm")) {
-        Write-Fail "npm não encontrado. Instale o Node.js primeiro."
+        Write-Fail "npm nao encontrado. Instale o Node.js primeiro."
         return
     }
 
     if (-not (Test-Path "package.json")) {
-        Write-Fail "package.json não encontrado. Verifique se está na pasta do projeto."
+        Write-Fail "package.json nao encontrado. Verifique se esta na pasta do projeto."
         return
     }
 
     Write-Info "Executando npm install..."
     npm install
     if ($LASTEXITCODE -eq 0) {
-        Write-Ok "Dependências instaladas com sucesso"
+        Write-Ok "Dependencias instaladas com sucesso"
     } else {
-        Write-Fail "Falha ao instalar dependências"
+        Write-Fail "Falha ao instalar dependencias"
     }
 }
 
 function Install-All {
-    Write-Title "Instalação Completa"
+    Write-Title "Instalacao Completa"
     Install-Git
     Install-Node
     Install-GhCli
     Install-Dependencies
     Write-Host ""
-    Write-Info "Instalação completa. Executando verificação..."
+    Write-Info "Instalacao completa. Executando verificacao..."
     Invoke-Verify
 }
-
-# ----- menu -----
 
 function Show-Menu {
     while ($true) {
         Clear-Host
         Write-Host ""
-        Write-Host "  ╔══════════════════════════════════════════════╗" -ForegroundColor Cyan
-        Write-Host "  ║     Taglia — Setup do Ambiente (Windows)    ║" -ForegroundColor Cyan
-        Write-Host "  ╚══════════════════════════════════════════════╝" -ForegroundColor Cyan
+        Write-Host "  +------------------------------------------------+" -ForegroundColor Cyan
+        Write-Host "  |     Taglia - Setup do Ambiente (Windows)      |" -ForegroundColor Cyan
+        Write-Host "  +------------------------------------------------+" -ForegroundColor Cyan
         Write-Host ""
         Write-Host "  [1]  Instalar tudo" -ForegroundColor White
         Write-Host "  [2]  Instalar Git" -ForegroundColor White
         Write-Host "  [3]  Instalar Node.js" -ForegroundColor White
         Write-Host "  [4]  Instalar GitHub CLI" -ForegroundColor White
-        Write-Host "  [5]  Instalar dependências do projeto (npm install)" -ForegroundColor White
+        Write-Host "  [5]  Instalar dependencias do projeto (npm install)" -ForegroundColor White
         Write-Host "  [6]  Verificar ambiente" -ForegroundColor White
         Write-Host "  [0]  Sair" -ForegroundColor DarkGray
         Write-Host ""
-        $choice = Read-Host "  Escolha uma opção"
+        $choice = Read-Host "  Escolha uma opcao"
 
         switch ($choice) {
             "1" { Install-All;          Pause-Menu }
@@ -253,11 +245,10 @@ function Show-Menu {
             "4" { Install-GhCli;        Pause-Menu }
             "5" { Install-Dependencies; Pause-Menu }
             "6" { Invoke-Verify;        Pause-Menu }
-            "0" { Write-Host ""; Write-Host "  Até mais!" -ForegroundColor Cyan; return }
-            default { Write-Warn "Opção inválida"; Start-Sleep -Seconds 1 }
+            "0" { Write-Host ""; Write-Host "  Ate mais!" -ForegroundColor Cyan; return }
+            default { Write-Warn "Opcao invalida"; Start-Sleep -Seconds 1 }
         }
     }
 }
 
-# ----- entrypoint -----
 Show-Menu
