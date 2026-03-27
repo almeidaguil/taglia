@@ -1,6 +1,97 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
+interface BowlSlice {
+  z0: string
+  z1: string
+  s0: string
+  s1: string
+}
+
+function computeBowlSlices(
+  bowlH: number,
+  slices: number,
+  baseScale: number,
+): BowlSlice[] {
+  const step = bowlH / slices
+  const result: BowlSlice[] = []
+  for (let i = 0; i < slices; i++) {
+    const t0 = i / slices
+    const t1 = (i + 1) / slices
+    result.push({
+      z0: (i * step).toFixed(2),
+      z1: ((i + 1) * step).toFixed(2),
+      s0: (baseScale + (1 - baseScale) * Math.sqrt(t0)).toFixed(4),
+      s1: (baseScale + (1 - baseScale) * Math.sqrt(t1)).toFixed(4),
+    })
+  }
+  return result
+}
+
+interface BowlTemplateParams {
+  pointsStr: string
+  pathsStr: string
+  pointCount: number
+  bowlH: number
+  wall: number
+  baseScale: number
+  slices: BowlSlice[]
+}
+
+function buildBowlTemplate(p: BowlTemplateParams): string {
+  const outerLines = p.slices.map(
+    ({ z0, z1, s0, s1 }) =>
+      `    hull() {\n` +
+      `      translate([0, 0, ${z0}])\n` +
+      `        linear_extrude(0.01, convexity = 10)\n` +
+      `        scale([${s0}, ${s0}]) shape_outer();\n` +
+      `      translate([0, 0, ${z1}])\n` +
+      `        linear_extrude(0.01, convexity = 10)\n` +
+      `        scale([${s1}, ${s1}]) shape_outer();\n` +
+      `    }`,
+  )
+  const innerLines = p.slices.map(
+    ({ z0, z1, s0, s1 }) =>
+      `    hull() {\n` +
+      `      translate([0, 0, ${z0}])\n` +
+      `        linear_extrude(0.01, convexity = 10)\n` +
+      `        scale([${s0}, ${s0}]) offset(r = -Wall_Thickness) shape_outer();\n` +
+      `      translate([0, 0, ${z1}])\n` +
+      `        linear_extrude(0.01, convexity = 10)\n` +
+      `        scale([${s1}, ${s1}]) offset(r = -Wall_Thickness) shape_outer();\n` +
+      `    }`,
+  )
+  const pct = (p.baseScale * 100).toFixed(0)
+  return `// Cumbuca a partir de Imagem — gerado pelo Taglia
+// ${p.pointCount} ponto(s), ${p.slices.length} fatias, escala base ${pct}%
+
+Bowl_Height    = ${p.bowlH};
+Wall_Thickness = ${p.wall};
+
+module shape_outer() {
+  polygon(points = ${p.pointsStr}, paths = ${p.pathsStr}, convexity = 10);
+}
+
+module outer_shell() {
+  union() {
+${outerLines.join('\n')}
+  }
+}
+
+module inner_cavity() {
+  union() {
+${innerLines.join('\n')}
+  }
+}
+
+difference() {
+  outer_shell();
+  translate([0, 0, Wall_Thickness])
+    inner_cavity();
+}
+`
+}
+
 async function generateScadCode(
   values: ParameterValues,
   _exportParam: string,
@@ -15,8 +106,8 @@ async function generateScadCode(
   const sizeMm = values['Size'] as number
   const bowlH = values['Bowl_Height'] as number
   const wall = values['Wall_Thickness'] as number
-  const baseScale = (values['Base_Scale'] as number) / 100 // UI mostra %, SCAD usa fração
-  const slices = values['Slices'] as number
+  const baseScale = (values['Base_Scale'] as number) / 100
+  const numSlices = values['Slices'] as number
   const threshold = values['Threshold'] as number
 
   const { pointsStr, pathsStr, pointCount } = await traceImageToScadPolygon(
@@ -25,78 +116,16 @@ async function generateScadCode(
     threshold,
   )
 
-  // Gera N fatias com hull() entre pares adjacentes.
-  // Escala varia de baseScale (fundo) a 1.0 (topo/borda) com curva sqrt para curvatura.
-  // A curva sqrt dá paredes que abrem suavemente (mais curvatura embaixo, menos no topo).
-  const step = bowlH / slices
-
-  const outerSlices: string[] = []
-  const innerSlices: string[] = []
-
-  for (let i = 0; i < slices; i++) {
-    const z0 = i * step
-    const z1 = (i + 1) * step
-    const t0 = i / slices
-    const t1 = (i + 1) / slices
-    // Curva sqrt: cresce rápido no início (fundo mais estreito), estabiliza no topo
-    const s0 = (baseScale + (1 - baseScale) * Math.sqrt(t0)).toFixed(4)
-    const s1 = (baseScale + (1 - baseScale) * Math.sqrt(t1)).toFixed(4)
-
-    outerSlices.push(
-      `    hull() {\n` +
-        `      translate([0, 0, ${z0.toFixed(2)}])\n` +
-        `        linear_extrude(0.01, convexity = 10)\n` +
-        `        scale([${s0}, ${s0}]) shape_outer();\n` +
-        `      translate([0, 0, ${z1.toFixed(2)}])\n` +
-        `        linear_extrude(0.01, convexity = 10)\n` +
-        `        scale([${s1}, ${s1}]) shape_outer();\n` +
-        `    }`,
-    )
-
-    // Inner: mesmo shape mas com offset negativo (parede) e escala ajustada
-    innerSlices.push(
-      `    hull() {\n` +
-        `      translate([0, 0, ${z0.toFixed(2)}])\n` +
-        `        linear_extrude(0.01, convexity = 10)\n` +
-        `        scale([${s0}, ${s0}]) offset(r = -Wall_Thickness) shape_outer();\n` +
-        `      translate([0, 0, ${z1.toFixed(2)}])\n` +
-        `        linear_extrude(0.01, convexity = 10)\n` +
-        `        scale([${s1}, ${s1}]) offset(r = -Wall_Thickness) shape_outer();\n` +
-        `    }`,
-    )
-  }
-
-  return `// Cumbuca a partir de Imagem — gerado pelo Taglia
-// ${pointCount} ponto(s), ${slices} fatias, escala base ${(baseScale * 100).toFixed(0)}%
-
-Bowl_Height    = ${bowlH};
-Wall_Thickness = ${wall};
-
-module shape_outer() {
-  polygon(points = ${pointsStr}, paths = ${pathsStr}, convexity = 10);
-}
-
-// Casca externa: fatias com hull() entre pares adjacentes
-module outer_shell() {
-  union() {
-${outerSlices.join('\n')}
-  }
-}
-
-// Casca interna (cavidade): mesmo formato, offset negativo
-module inner_cavity() {
-  union() {
-${innerSlices.join('\n')}
-  }
-}
-
-// Tigela = casca externa - cavidade interna
-difference() {
-  outer_shell();
-  translate([0, 0, Wall_Thickness])
-    inner_cavity();
-}
-`
+  const slices = computeBowlSlices(bowlH, numSlices, baseScale)
+  return buildBowlTemplate({
+    pointsStr,
+    pathsStr,
+    pointCount,
+    bowlH,
+    wall,
+    baseScale,
+    slices,
+  })
 }
 
 export const bowlAnything: ModelDefinition = {

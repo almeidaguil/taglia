@@ -1,61 +1,48 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
-async function generateScadCode(
-  values: ParameterValues,
-  _exportParam: string,
-): Promise<string> {
-  const dataUrl = values['Image'] as string
-  if (!dataUrl || !dataUrl.startsWith('data:')) {
-    throw new Error(
-      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
-    )
-  }
+interface CutterParams {
+  pointsStr: string
+  pathsStr: string
+  pointCount: number
+  pathCount: number
+  wall: number
+  height: number
+  hasHandle: boolean
+  handleHeight: number
+  handleWidth: number
+}
 
-  const sizeMm = values['Size'] as number
-  const wall = values['Wall_Thickness'] as number
-  const height = values['Height'] as number
-  const threshold = values['Threshold'] as number
-  const hasHandle = values['Handle'] as boolean
-  const handleHeight = values['Handle_Height'] as number
-  const handleWidth = values['Handle_Width'] as number
-
-  const { pointsStr, pathsStr, pointCount, pathCount } =
-    await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
-
+function buildCutterTemplate(p: CutterParams): string {
   return `// Cortador de Biscoito — gerado pelo Taglia
-// ${pointCount} pontos, ${pathCount} caminho(s)
+// ${p.pointCount} pontos, ${p.pathCount} caminho(s)
 
-Wall_Thickness = ${wall};   // espessura da parede (mm)
-Height         = ${height}; // altura total (mm)
-Handle         = ${hasHandle ? 'true' : 'false'};
-Handle_Height  = ${handleHeight};
-Handle_Width   = ${handleWidth};
+Wall_Thickness = ${p.wall};   // espessura da parede (mm)
+Height         = ${p.height}; // altura total (mm)
+Handle         = ${p.hasHandle ? 'true' : 'false'};
+Handle_Height  = ${p.handleHeight};
+Handle_Width   = ${p.handleWidth};
 
 module shape_2d() {
   polygon(
-    points = ${pointsStr},
-    paths  = ${pathsStr},
+    points = ${p.pointsStr},
+    paths  = ${p.pathsStr},
     convexity = 10
   );
 }
 
 module cutter_wall() {
   difference() {
-    // Face externa: contorno expandido pela espessura da parede
     linear_extrude(Height, convexity = 10)
       offset(r = Wall_Thickness)
       shape_2d();
 
-    // Remove o interior (lâmina de corte)
     translate([0, 0, -0.1])
       linear_extrude(Height + 0.2, convexity = 10)
       shape_2d();
   }
 }
 
-// Aba horizontal no topo da lâmina (facilita pressionar)
-// É um anel plano que se projeta para fora da parede — sem hull() convexo.
 module handle_strip() {
   linear_extrude(Handle_Height, convexity = 10)
     difference() {
@@ -74,6 +61,35 @@ if (Handle) {
   cutter_wall();
 }
 `
+}
+
+async function generateScadCode(
+  values: ParameterValues,
+  _exportParam: string,
+): Promise<string> {
+  const dataUrl = values['Image'] as string
+  if (!dataUrl || !dataUrl.startsWith('data:')) {
+    throw new Error(
+      'Nenhuma imagem enviada. Faça upload de uma imagem antes de gerar.',
+    )
+  }
+
+  const sizeMm = values['Size'] as number
+  const threshold = values['Threshold'] as number
+  const { pointsStr, pathsStr, pointCount, pathCount } =
+    await traceImageToScadPolygon(dataUrl, sizeMm, threshold)
+
+  return buildCutterTemplate({
+    pointsStr,
+    pathsStr,
+    pointCount,
+    pathCount,
+    wall: values['Wall_Thickness'] as number,
+    height: values['Height'] as number,
+    hasHandle: values['Handle'] as boolean,
+    handleHeight: values['Handle_Height'] as number,
+    handleWidth: values['Handle_Width'] as number,
+  })
 }
 
 export const cookieCutterGenerator: ModelDefinition = {

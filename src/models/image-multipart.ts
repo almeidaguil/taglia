@@ -1,6 +1,74 @@
 import type { ModelDefinition, ParameterValues } from '../types'
 import { traceImageToScadPolygon } from '../utils/imageTrace'
 
+interface BandGeometry {
+  translate: string
+  cube: string
+}
+
+interface BandConfig {
+  direction: string
+  bbox: number
+  bandSize: number
+  partIndex: number
+  thickness: number
+  tolerance: number
+}
+
+function computeBand(cfg: BandConfig): BandGeometry {
+  const halfZ = (cfg.thickness / 2).toFixed(1)
+  const hFull = (cfg.thickness + 0.2).toFixed(1)
+  const bw = (cfg.bandSize - cfg.tolerance).toFixed(3)
+  const dbl = (cfg.bbox * 2).toFixed(1)
+  if (cfg.direction === 'horizontal') {
+    const yPos = -cfg.bbox / 2 + cfg.partIndex * cfg.bandSize + cfg.bandSize / 2
+    return {
+      translate: `translate([0, ${yPos.toFixed(3)}, ${halfZ}])`,
+      cube: `cube([${dbl}, ${bw}, ${hFull}], center = true)`,
+    }
+  }
+  const xPos = -cfg.bbox / 2 + cfg.partIndex * cfg.bandSize + cfg.bandSize / 2
+  return {
+    translate: `translate([${xPos.toFixed(3)}, 0, ${halfZ}])`,
+    cube: `cube([${bw}, ${dbl}, ${hFull}], center = true)`,
+  }
+}
+
+interface MultipartTemplateParams {
+  pointsStr: string
+  pathsStr: string
+  pointCount: number
+  partIndex: number
+  parts: number
+  direction: string
+  thickness: number
+  tolerance: number
+  band: BandGeometry
+}
+
+function buildMultipartTemplate(p: MultipartTemplateParams): string {
+  const dirLabel = p.direction === 'horizontal' ? 'horizontal' : 'vertical'
+  return `// Imagem Multipartes — gerado pelo Taglia
+// ${p.pointCount} ponto(s) | Parte ${p.partIndex + 1} de ${p.parts} (${p.direction})
+
+Thickness = ${p.thickness};
+Tolerance = ${p.tolerance};
+
+module shape_outer() {
+  polygon(points = ${p.pointsStr}, paths = ${p.pathsStr}, convexity = 10);
+}
+
+// Parte ${p.partIndex + 1}: interseção da silhueta com faixa ${dirLabel}
+intersection() {
+  linear_extrude(Thickness, convexity = 10)
+    shape_outer();
+
+  ${p.band.translate}
+    ${p.band.cube};
+}
+`
+}
+
 async function generateScadCode(
   values: ParameterValues,
   exportParam: string,
@@ -18,11 +86,8 @@ async function generateScadCode(
   const thickness = values['Thickness'] as number
   const tolerance = values['Tolerance'] as number
   const threshold = values['Threshold'] as number
-
-  // Determina qual parte renderizar (1-indexed)
   const partIndex = parseInt(exportParam.replace('Part_', '')) - 1
 
-  // Se a parte solicitada excede o número de partes configurado, gera SCAD vazio
   if (partIndex >= parts) {
     return `// Imagem Multipartes — gerado pelo Taglia
 // Parte ${partIndex + 1} não existe (total de partes: ${parts})
@@ -35,45 +100,27 @@ async function generateScadCode(
     sizeMm,
     threshold,
   )
-
-  // Bounding box generosa para cobrir toda a silhueta
   const bbox = sizeMm * 1.5
-  const bandSize = bbox / parts
+  const band = computeBand({
+    direction,
+    bbox,
+    bandSize: bbox / parts,
+    partIndex,
+    thickness,
+    tolerance,
+  })
 
-  // Gera o corte da faixa para a parte solicitada
-  const i = partIndex
-  let bandTranslate: string
-  let bandCube: string
-
-  if (direction === 'horizontal') {
-    const yPos = -bbox / 2 + i * bandSize + bandSize / 2
-    bandTranslate = `translate([0, ${yPos.toFixed(3)}, ${(thickness / 2).toFixed(1)}])`
-    bandCube = `cube([${(bbox * 2).toFixed(1)}, ${(bandSize - tolerance).toFixed(3)}, ${(thickness + 0.2).toFixed(1)}], center = true)`
-  } else {
-    const xPos = -bbox / 2 + i * bandSize + bandSize / 2
-    bandTranslate = `translate([${xPos.toFixed(3)}, 0, ${(thickness / 2).toFixed(1)}])`
-    bandCube = `cube([${(bandSize - tolerance).toFixed(3)}, ${(bbox * 2).toFixed(1)}, ${(thickness + 0.2).toFixed(1)}], center = true)`
-  }
-
-  return `// Imagem Multipartes — gerado pelo Taglia
-// ${pointCount} ponto(s) | Parte ${partIndex + 1} de ${parts} (${direction})
-
-Thickness = ${thickness};
-Tolerance = ${tolerance};
-
-module shape_outer() {
-  polygon(points = ${pointsStr}, paths = ${pathsStr}, convexity = 10);
-}
-
-// Parte ${partIndex + 1}: interseção da silhueta com faixa ${direction === 'horizontal' ? 'horizontal' : 'vertical'}
-intersection() {
-  linear_extrude(Thickness, convexity = 10)
-    shape_outer();
-
-  ${bandTranslate}
-    ${bandCube};
-}
-`
+  return buildMultipartTemplate({
+    pointsStr,
+    pathsStr,
+    pointCount,
+    partIndex,
+    parts,
+    direction,
+    thickness,
+    tolerance,
+    band,
+  })
 }
 
 export const imageMultipart: ModelDefinition = {
