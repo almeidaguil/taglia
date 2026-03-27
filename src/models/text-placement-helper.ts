@@ -1,0 +1,99 @@
+import type { ModelDefinition } from '../types'
+
+export const textPlacementHelper: ModelDefinition = {
+  id: 'text-placement-helper',
+  slug: 'text-placement-helper',
+  title: 'Auxiliar de Posicionamento',
+  subtitle: 'Régua e gabarito paramétrico para auxiliar o posicionamento preciso de textos e elementos em impressões 3D.',
+  category: 'tools',
+  difficulty: 'easy',
+  tags: ['régua', 'gabarito', 'posicionamento', 'auxiliar', 'ferramenta', 'medição'],
+  exportOptions: [
+    { format: 'stl', parameter: 'Base', filename: 'TextHelper' },
+  ],
+  scadFile: 'text-placement-helper.scad',
+  sections: [
+    {
+      name: 'Dimensões',
+      parameterOrder: ['Width', 'Height', 'Thickness', 'Corner_Radius'],
+      parameters: {
+        Width: {
+          type: 'number',
+          description: 'Comprimento da régua (mm)',
+          default: 200,
+          min: 50,
+          max: 400,
+          step: 10,
+        },
+        Height: {
+          type: 'number',
+          description: 'Largura da régua (mm)',
+          default: 30,
+          min: 15,
+          max: 60,
+          step: 5,
+        },
+        Thickness: {
+          type: 'number',
+          description: 'Espessura (mm)',
+          default: 2.5,
+          min: 1.5,
+          max: 5,
+          step: 0.5,
+        },
+        Corner_Radius: {
+          type: 'number',
+          description: 'Raio dos cantos (mm)',
+          default: 3,
+          min: 0,
+          max: 10,
+          step: 1,
+        },
+      },
+    },
+    {
+      name: 'Marcações',
+      parameterOrder: ['Grid_Spacing', 'Mark_H', 'Mark_Depth', 'Label_Size', 'Font'],
+      parameters: {
+        Grid_Spacing: {
+          type: 'number',
+          description: 'Espaço entre marcações (mm)',
+          default: 10,
+          min: 5,
+          max: 25,
+          step: 5,
+        },
+        Mark_H: {
+          type: 'number',
+          description: 'Altura das marcações (mm)',
+          default: 3,
+          min: 1,
+          max: 8,
+          step: 0.5,
+        },
+        Mark_Depth: {
+          type: 'number',
+          description: 'Profundidade das marcações (mm)',
+          default: 0.6,
+          min: 0.3,
+          max: 1.5,
+          step: 0.1,
+        },
+        Label_Size: {
+          type: 'number',
+          description: 'Tamanho dos números (mm)',
+          default: 5,
+          min: 3,
+          max: 10,
+          step: 0.5,
+        },
+        Font: {
+          type: 'select',
+          description: 'Fonte dos números',
+          default: 'Roboto Mono',
+          options: ['Roboto Mono', 'Montserrat', 'Bebas Neue'],
+        },
+      },
+    },
+  ],
+}

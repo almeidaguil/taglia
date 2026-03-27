@@ -1,0 +1,126 @@
+import type { ModelDefinition } from '../types'
+
+export const wordOffset3Color: ModelDefinition = {
+  id: 'word-offset-3color',
+  slug: 'word-offset-3color',
+  title: 'Letreiro de Palavra - 3 Camadas',
+  subtitle: 'Letreiro multicolorido com efeito 3D deslocado. Imprime em 3 partes: base, meio e topo.',
+  category: 'signs',
+  difficulty: 'easy',
+  tags: ['palavra', 'letreiro', 'texto', 'decoração', 'presente', 'aniversário'],
+  exportOptions: [
+    { format: 'stl', parameter: 'Base', filename: 'Word-3Color-Base' },
+    { format: 'stl', parameter: 'Middle', filename: 'Word-3Color-Middle' },
+    { format: 'stl', parameter: 'Top', filename: 'Word-3Color-Top' },
+  ],
+  scadFile: 'word-offset-3color.scad',
+  sections: [
+    {
+      name: 'default',
+      parameterOrder: ['Text', 'Font'],
+      parameters: {
+        Text: {
+          type: 'string',
+          description: 'Texto',
+          default: 'Mafa3D',
+        },
+        Font: {
+          type: 'select',
+          description: 'Fonte',
+          default: 'Bebas Neue',
+          options: [
+            'Bebas Neue',
+            'Dancing Script',
+            'Great Vibes',
+            'Lobster',
+            'Montserrat',
+            'Pacifico',
+            'Roboto Mono',
+            'Sacramento',
+          ],
+        },
+      },
+    },
+    {
+      name: 'Tamanho',
+      parameterOrder: ['Target_Size', 'Base_Width'],
+      parameters: {
+        Target_Size: {
+          type: 'number',
+          description: 'Tamanho do texto (mm)',
+          default: 150,
+          min: 40,
+          max: 280,
+          step: 1,
+        },
+        Base_Width: {
+          type: 'number',
+          description: 'Largura da base (mm)',
+          default: 180,
+          min: 50,
+          max: 320,
+          step: 5,
+        },
+      },
+    },
+    {
+      name: 'Ajustes',
+      parameterOrder: ['Offset', 'Tolerance', 'Base_Height', 'Layer_Height'],
+      parameters: {
+        Offset: {
+          type: 'number',
+          description: 'Deslocamento entre camadas (mm)',
+          default: 2,
+          min: 0.5,
+          max: 8,
+          step: 0.5,
+        },
+        Tolerance: {
+          type: 'number',
+          description: 'Tolerância de encaixe (mm)',
+          default: 0.2,
+          min: 0.1,
+          max: 0.5,
+          step: 0.05,
+        },
+        Base_Height: {
+          type: 'number',
+          description: 'Altura da base (mm)',
+          default: 3,
+          min: 1,
+          max: 10,
+          step: 0.5,
+        },
+        Layer_Height: {
+          type: 'number',
+          description: 'Altura de cada camada (mm)',
+          default: 4,
+          min: 2,
+          max: 12,
+          step: 0.5,
+        },
+      },
+    },
+    {
+      name: 'Cores (para referência visual)',
+      parameterOrder: ['Base_Color', 'Middle_Color', 'Top_Color'],
+      parameters: {
+        Base_Color: {
+          type: 'color',
+          description: 'Cor da base',
+          default: '#1a1a2e',
+        },
+        Middle_Color: {
+          type: 'color',
+          description: 'Cor do meio',
+          default: '#e94560',
+        },
+        Top_Color: {
+          type: 'color',
+          description: 'Cor do topo',
+          default: '#f5f5f5',
+        },
+      },
+    },
+  ],
+}
